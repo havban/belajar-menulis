@@ -1,12 +1,13 @@
 // The lesson screen: pick a letter, watch it drawn, copy it, collect stars.
 
-import { SETS, spokenName, shortName, wordOf, glyph } from './glyphs.js?v=__BUILD__';
+import { SETS, setOf, spokenName, shortName, wordOf, glyph } from './glyphs.js?v=__BUILD__';
 import { TracePad, reasonText } from './trace.js?v=__BUILD__';
 import { Mascot } from './mascot.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as lines from './lines.js?v=__BUILD__';
+import * as stats from './analytics.js?v=__BUILD__';
 
 const PRAISE = ['Hebat!', 'Keren!', 'Pintar!', 'Bagus sekali!', 'Mantap!', 'Wow!'];
 const CHEER_LINE = ['Hebat sekali!', 'Keren, kamu pintar!', 'Bagus! Lanjut ya!', 'Wah, rapi sekali!'];
@@ -70,6 +71,7 @@ export function createTutor() {
     if (celebrating) return;
     celebrating = true;
     const fresh = progress.award(ch, stars);
+    stats.recordLetter({ set: setOf(ch), stars, repeat });
     audio.sfx('win');
     fx.confetti(110);
     fx.praise(PRAISE[(Math.random() * PRAISE.length) | 0]);
@@ -182,10 +184,15 @@ export function createTutor() {
     for (const b of $('t-reps').querySelectorAll('.rep')) b.classList.toggle('on', +b.dataset.n === repeat);
   }
 
-  $('t-demo').addEventListener('click', () => { audio.sfx('tap'); pad.playDemo(pad.finished ? 0 : pad.index); });
+  $('t-demo').addEventListener('click', () => {
+    audio.sfx('tap');
+    stats.once('contoh-dilihat', 'Menonton contoh menulis');
+    pad.playDemo(pad.finished ? 0 : pad.index);
+  });
   $('t-clear').addEventListener('click', () => { audio.sfx('tap'); pad.reset(); celebrating = false; say('Ayo tulis lagi dari awal!'); });
   $('t-say').addEventListener('click', () => {
     audio.sfx('tap');
+    stats.once('dengar-ditekan', 'Menekan tombol Dengar');
     audio.speakParts(audio.pickLine(lines.HEAR, said, 'hear')(spokenName(ch), wordOf(ch).word, shortName(ch)));
   });
   $('t-next').addEventListener('click', () => { audio.sfx('tap'); nextChar(); });

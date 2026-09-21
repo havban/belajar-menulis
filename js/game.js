@@ -10,6 +10,7 @@ import * as audio from './audio.js?v=__BUILD__';
 import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as lines from './lines.js?v=__BUILD__';
+import * as stats from './analytics.js?v=__BUILD__';
 
 const $ = (id) => document.getElementById(id);
 const WIN_WORDS = ['Hebat!', 'Kena!', 'Mantap!', 'Keren!', 'Pukul!'];
@@ -25,6 +26,7 @@ export function createGame() {
     phase: 'ready', hearts: 3, score: 0, level: 1, streak: 0, round: 0,
     t: 0, scroll: 0, ch: 'A', timeLeft: 0, timeMax: 20, shake: 0,
     lunge: 0, phaseT: 0, enemy: null, puffs: [], floaters: [], fails: 0,
+    defeated: 0, startedAt: 0,
   };
 
   const pad = new TracePad($('g-pad'), {
@@ -125,6 +127,7 @@ export function createGame() {
     const gained = 10 + stars * 5 + bonus;
     S.score += gained;
     S.streak++;
+    S.defeated++;
     floater(e.x, groundY() - H * 0.35, `+${gained}`, '#ffd166');
     fx.praise(WIN_WORDS[(Math.random() * WIN_WORDS.length) | 0], '#06d6a0');
     fx.burstStars(innerWidth * 0.5, innerHeight * 0.3, stars);
@@ -162,6 +165,10 @@ export function createGame() {
   function gameOver() {
     S.phase = 'over';
     progress.setBest(S.score);
+    stats.recordGame({
+      score: S.score, level: S.level, defeated: S.defeated,
+      seconds: S.startedAt ? (performance.now() - S.startedAt) / 1000 : 0,
+    });
     $('go-score').textContent = S.score;
     $('go-best').textContent = progress.best();
     const who = progress.name();
@@ -311,6 +318,7 @@ export function createGame() {
     Object.assign(S, {
       hearts: 3, score: 0, level: 1, streak: 0, round: 0,
       scroll: 0, lunge: 0, puffs: [], floaters: [], fails: 0, shake: 0,
+      defeated: 0, startedAt: performance.now(),
     });
     $('g-over').classList.add('hidden');
     updateHud();

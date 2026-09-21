@@ -106,6 +106,27 @@ bisa menambah.
 
 ---
 
+## Catatan untuk pemilik aplikasi
+
+**Statistik lokal.** Buka `?stats=1` (atau ketik `__stats()` di konsol) untuk
+melihat rekap yang tersimpan di perangkat itu sendiri: berapa huruf selesai per
+kelompok, berapa kotak latihan ditulis, jumlah bintang, jumlah permainan, waktu
+main, skor dan level terbaik. Data ini **tidak pernah dikirim ke mana pun**.
+
+**Statistik agregat (GoatCounter).** `index.html` memuat tag GoatCounter —
+tanpa cookie, menghormati Do Not Track, dan papan pantauannya di
+<https://havban.goatcounter.com>. Semua event dari aplikasi ini diberi awalan
+`belajar-menulis/` agar tidak tercampur dengan aplikasi lain di papan yang
+sama: `belajar-menulis/huruf-selesai`, `.../bintang-3`, `.../latihan-2x`,
+`.../set-kapital`, `.../game-selesai`, `.../skor-500-999`, `.../level-4-6`,
+`.../pengunjung-baru`, dan `.../nama/<nama anak>`.
+
+> Nama anak yang diisi ikut terkirim sebagai event (sekali saja per nama, tidak
+> setiap kali dibuka). Kalau tidak ingin nama terkirim, hapus baris
+> `stats.trackName(...)` di `js/main.js`; untuk mematikan **seluruh** kiriman
+> agregat, hapus tag `data-goatcounter` di `index.html`. Statistik lokal tetap
+> jalan.
+
 ## Menjalankan di komputer sendiri
 
 Tidak ada proses *build*, tidak ada dependensi. Cukup layani foldernya lewat
@@ -137,6 +158,7 @@ js/game.js          layar permainan
 js/audio.js         musik dan efek suara (dibangkitkan, bukan berkas audio)
 js/fx.js            konfeti, bintang, kata pujian
 js/progress.js      penyimpanan bintang & skor di perangkat
+js/analytics.js     rekap lokal + event agregat (berawalan belajar-menulis/)
 js/lines.js         semua kalimat yang diucapkan, beserta variasinya
 js/main.js          latar belakang, perpindahan layar, pengaturan
 voice/              rekaman suara opsional (lihat voice/README.md)

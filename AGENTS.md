@@ -49,7 +49,8 @@ js/tutor.js           lesson screen controller
 js/game.js            game screen controller (phases, enemies, scoring)
 js/audio.js           synthesised music, effects and Indonesian speech
 js/fx.js              full-screen confetti/star/praise layer
-js/progress.js        localStorage: stars per glyph, high score, settings
+js/progress.js        localStorage: stars per glyph, high score, settings, name
+js/analytics.js       local tally + prefixed aggregate events
 js/main.js            backdrop, routing, settings, service worker
 sw.js                 network-first offline cache
 ```
@@ -138,6 +139,28 @@ so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice
 the utterance can neither start nor report an error, and the music would stay
 quiet forever. And every call takes a token; stale callbacks from a cancelled
 line must not un-duck or continue a sequence that has been replaced.
+
+## Analytics
+
+`js/analytics.js` is the Rhino Rex module, adapted. Two halves: a local tally in
+`localStorage` (never leaves the device, shown by `?stats=1`) and aggregate
+events to GoatCounter, whose tag lives in `index.html`.
+
+**Every custom event is prefixed `belajar-menulis/`.** The GoatCounter site is
+shared with the other apps, so an unprefixed `game-selesai` or `level-4-6` would
+be indistinguishable from theirs - the prefix is also what lets the dashboard
+filter this app in or out with one term. Page views are not prefixed; their
+path is the real URL.
+
+Counters are bucketed (`skor-500-999`, `level-4-6`, `hari-aktif-6-19`) so the
+dashboard shows a distribution rather than a long tail of unique numbers, and
+session-shaped events go through `once()` so a child tapping around cannot
+flood it.
+
+The one value that is not a plain counter is the child's name
+(`trackName`), sent as `nama/<name>` once per name - not on every load. It is
+deliberately the only user-supplied value that reaches the dashboard; removing
+that one call (or the tag) stops it.
 
 ## Gotchas
 

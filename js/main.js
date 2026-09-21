@@ -6,6 +6,7 @@ import { createTutor } from './tutor.js?v=__BUILD__';
 import { createGame } from './game.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
+import * as stats from './analytics.js?v=__BUILD__';
 
 const $ = (id) => document.getElementById(id);
 const screens = { menu: $('s-menu'), belajar: $('s-belajar'), game: $('s-game') };
@@ -74,6 +75,7 @@ function saveName() {
   nameBox.classList.add('hidden');
   refreshMenu();
   tutor.showName();
+  stats.trackName(who);
   if (who) {
     audio.sfx('star');
     audio.speakParts([{ text: 'Halo,', pitch: 1.25 }, who, 'ayo kita belajar menulis!']);
@@ -89,6 +91,11 @@ const tutor = createTutor();
 const game = createGame();
 const parts = { belajar: tutor, game };
 
+const SCREEN_EVENT = {
+  belajar: ['belajar-dibuka', 'Membuka layar belajar'],
+  game: ['game-dibuka', 'Membuka permainan'],
+};
+
 function show(name) {
   if (name === current) return;
   const prev = parts[current];
@@ -99,6 +106,7 @@ function show(name) {
   if (name === 'menu') { refreshMenu(); menuMascot.start(); } else menuMascot.stop();
   const part = parts[name];
   if (part) part.open();
+  if (SCREEN_EVENT[name]) stats.once(...SCREEN_EVENT[name]);
 }
 
 for (const el of document.querySelectorAll('[data-go]')) {
@@ -176,6 +184,14 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
 
+// Usage counters: a local tally that never leaves the device, plus aggregate
+// events to GoatCounter when its tag is present.
+stats.install();
+stats.trackVisitor();
+if (progress.name()) stats.trackName(progress.name());
+if (/[?&]stats=1/.test(location.search)) stats.mountPanel();
+window.__stats = () => stats.mountPanel();
+
 refreshMenu();
 // First visit: ask who is about to write, so the dino can use their name - but
 // only if they are still looking at the menu. A child who has already tapped
@@ -184,4 +200,4 @@ if (!progress.name()) {
   setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
 }
 
-window.__app = { show, progress, audio, askName, get screen() { return current; }, tutor, game };
+window.__app = { show, progress, audio, stats, askName, get screen() { return current; }, tutor, game };
