@@ -172,7 +172,10 @@ html, body {
 }
 .info {
   flex: 0 0 auto;
-  display: flex; align-items: center; gap: 10px;
+  /* wrapping puts the tip on its own line: on a narrow phone it would
+     otherwise be squeezed into a six-line column beside the mascot and eat
+     the height that belongs to the writing pad */
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
   background: var(--card);
   border-radius: var(--round);
   padding: 6px 12px;
