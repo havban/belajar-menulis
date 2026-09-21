@@ -53,7 +53,36 @@ $('m-mascot').addEventListener('click', () => {
 function refreshMenu() {
   $('m-stars').textContent = progress.totalStars();
   $('m-best').textContent = progress.best();
+  const who = progress.name();
+  $('m-greet').textContent = who
+    ? `Halo, ${who}! Ayo belajar menulis 🦖`
+    : 'Petualangan menulis bersama dino 🦖';
 }
+
+// ---------------------------------------------------------- the name
+const nameBox = $('s-name'), nameInput = $('name-input');
+
+function askName() {
+  nameInput.value = progress.name();
+  nameBox.classList.remove('hidden');
+  setTimeout(() => nameInput.focus(), 60);
+}
+
+function saveName() {
+  audio.unlock();
+  const who = progress.setName(nameInput.value);
+  nameBox.classList.add('hidden');
+  refreshMenu();
+  tutor.showName();
+  if (who) {
+    audio.sfx('star');
+    audio.speakParts([{ text: 'Halo,', pitch: 1.25 }, who, 'ayo kita belajar menulis!']);
+  }
+}
+
+$('name-save').addEventListener('click', saveName);
+$('name-skip').addEventListener('click', () => { audio.sfx('tap'); nameBox.classList.add('hidden'); });
+nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveName(); });
 
 // ------------------------------------------------------------ router
 const tutor = createTutor();
@@ -98,6 +127,7 @@ $('set-sfx').checked = prefs.sfx;
 $('set-voice').checked = prefs.voice;
 
 $('btn-settings').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.remove('hidden'); });
+$('set-name').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); askName(); });
 $('set-close').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); });
 $('set-music').addEventListener('change', (e) => { audio.unlock(); audio.setMusic(e.target.checked); progress.setPref('music', e.target.checked); });
 $('set-sfx').addEventListener('change', (e) => { audio.unlock(); audio.setSfx(e.target.checked); progress.setPref('sfx', e.target.checked); audio.sfx('pop'); });
@@ -117,6 +147,7 @@ $('set-reset').addEventListener('click', () => {
   if (confirm('Hapus semua bintang dan skor?')) {
     progress.reset();
     refreshMenu();
+    tutor.showName();
     audio.sfx('bad');
   }
 });
@@ -146,4 +177,11 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 }
 
 refreshMenu();
-window.__app = { show, progress, audio, get screen() { return current; }, tutor, game };
+// First visit: ask who is about to write, so the dino can use their name - but
+// only if they are still looking at the menu. A child who has already tapped
+// through to a lesson should not have a dialog land on top of their writing.
+if (!progress.name()) {
+  setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
+}
+
+window.__app = { show, progress, audio, askName, get screen() { return current; }, tutor, game };

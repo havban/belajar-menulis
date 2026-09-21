@@ -30,6 +30,12 @@ dibuka, aplikasi ini juga bisa dipakai **tanpa internet**.
   **B untuk Bola**, **D untuk Dinosaurus**, dan seterusnya.
 * Tombol **🔊 Dengar** membacakan nama huruf dan contoh katanya dalam bahasa
   Indonesia (memakai suara bawaan perangkat).
+* **Nama anak.** Saat pertama dibuka, aplikasi menanyakan nama anak (boleh
+  dilewati, dan bisa diganti kapan saja lewat ⚙️). Namanya muncul sebagai
+  sapaan di menu — "Halo, Rani! Ayo belajar menulis 🦖" — dan di sudut layar
+  belajar, serta **dipanggil langsung oleh suara**: "Ayo, Rani, kita tulis
+  huruf be besar", "Hebat, Rani! Sekarang huruf ce besar". Namanya tidak
+  disebut di setiap kalimat, hanya sesekali, supaya tetap terasa wajar.
 * **Latihan 1× sampai 4×.** Pilihan **Latihan** di kartu huruf menentukan
   berapa kali huruf yang sama ditulis dalam satu halaman — persis seperti buku
   halus. Kotak yang sedang dikerjakan diberi garis biru, kotak yang sudah

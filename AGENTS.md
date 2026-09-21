@@ -127,6 +127,12 @@ still goes through the device voice. The slug is derived from the phrase itself
 (`clipName`), which is why the letter name is its own part with no punctuation:
 one recording of "huruf be besar" serves every sentence that mentions it.
 
+The child's name (`progress.name()`) is always **its own part**, never spliced
+into a sentence: a fixed pack cannot contain every child's name, but a family
+that records one file named after their child gets it in the recorded voice for
+free. Name-flavoured variants (`*_WHO` tables) are used on roughly half the
+lines - every sentence would wear thin fast.
+
 Two traps: the music is ducked under the voice and only un-ducked on `onend`,
 so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice
 the utterance can neither start nor report an error, and the music would stay

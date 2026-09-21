@@ -29,6 +29,12 @@ anak.
 5. Muat ulang aplikasi. Di konsol peramban akan muncul `[suara] N rekaman
    dimuat`.
 
+Nama anak tidak ada di daftar karena berbeda-beda. Rekam saja satu berkas berisi
+namanya — untuk "Rani" simpan sebagai `rani.m4a` — lalu jalankan ulang
+`tools/voice-manifest.sh`. Selama nama itu yang diisi di layar pengaturan,
+aplikasi memakai rekaman tersebut; kalau tidak ada, hanya bagian namanya saja
+yang dibacakan perangkat.
+
 Format apa pun yang bisa diputar peramban boleh dipakai (`m4a`, `mp3`, `ogg`,
 `wav`) — asal **semua** berkas memakai ekstensi yang sama dengan isi `"ext"` di
 `clips.json`. Ukuran wajar: 15–40 KB per rekaman, jadi paket inti sekitar 3–5 MB.

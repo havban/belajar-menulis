@@ -98,7 +98,8 @@ export function createGame() {
     pad.enabled = true;
     promptEl.classList.remove('hide');
     showPrompt();
-    audio.speakParts(audio.pickLine(lines.CALL, said, 'call')(spokenName(S.ch)));
+    const who = progress.name();
+    audio.speakParts(audio.pickLine(lines.forName(lines.CALL, lines.CALL_WHO, who), said, 'call')(spokenName(S.ch), who));
   }
 
   function succeed() {
@@ -133,7 +134,8 @@ export function createGame() {
       floater(W * 0.5, groundY() - H * 0.5, `Level ${S.level}!`, '#ff4d6d');
       audio.speakParts(lines.LEVEL(S.level));
     } else {
-      audio.speakParts(audio.pickLine(lines.HIT, said, 'hit'));
+      const who = progress.name();
+      audio.speakParts(audio.pickLine(lines.forName(lines.HIT, lines.HIT_WHO, who), said, 'hit')(who));
     }
     updateHud();
   }
@@ -151,7 +153,8 @@ export function createGame() {
     e.vx = -W * 0.9;
     e.vy = e.type === 'ptero' ? 0 : -H * 0.4;
     floater(W * 0.3, groundY() - H * 0.4, '💔', '#ff4d6d');
-    if (S.hearts > 0) audio.speakParts(audio.pickLine(lines.OUCH, said, 'ouch'));
+    const who = progress.name();
+    if (S.hearts > 0) audio.speakParts(audio.pickLine(lines.forName(lines.OUCH, lines.OUCH_WHO, who), said, 'ouch')(who));
     else audio.speakParts(lines.GAME_OVER);
     updateHud();
   }
@@ -161,7 +164,11 @@ export function createGame() {
     progress.setBest(S.score);
     $('go-score').textContent = S.score;
     $('go-best').textContent = progress.best();
-    $('go-title').textContent = S.score >= progress.best() && S.score > 0 ? 'Rekor Baru! 🏆' : 'Permainan Selesai!';
+    const who = progress.name();
+    const record = S.score >= progress.best() && S.score > 0;
+    $('go-title').textContent = record
+      ? (who ? `Rekor Baru, ${who}! 🏆` : 'Rekor Baru! 🏆')
+      : (who ? `Permainan Selesai, ${who}!` : 'Permainan Selesai!');
     $('g-over').classList.remove('hidden');
     audio.sfx('lose');
   }

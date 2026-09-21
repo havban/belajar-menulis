@@ -78,11 +78,66 @@ export const CALL = [
   (n) => ['Ayo, lawan dia!', 'Tulis', N(n)],
 ];
 export const HIT = [
-  [UP('Kena!')], [UP('Mantap!')], [UP('Hebat!')], ['Kena! Bagus sekali.'], [UP('Keren!'), 'Terus begitu.'],
+  () => [UP('Kena!')],
+  () => [UP('Mantap!')],
+  () => [UP('Hebat!')],
+  () => ['Kena! Bagus sekali.'],
+  () => [UP('Keren!'), 'Terus begitu.'],
 ];
 export const OUCH = [
-  ['Aduh! Ayo coba lagi.'], ['Wah, kena. Semangat!'], [UP('Hampir!'), 'Ayo coba lagi.'], ['Jangan menyerah ya.'],
+  () => ['Aduh! Ayo coba lagi.'],
+  () => ['Wah, kena. Semangat!'],
+  () => [UP('Hampir!'), 'Ayo coba lagi.'],
+  () => ['Jangan menyerah ya.'],
 ];
+
+// ------------------------------------------------- lines that use the name
+// The name is always its own part. It can never be one of the fixed recordings
+// - every child's is different - but a family recording just that one word
+// slots straight in, because the filename comes from the word itself.
+export const ASK_WHO = [
+  (n, who) => [UP('Ayo,'), who, 'kita tulis', N(n)],
+  (n, who) => [who, 'siap? Kita tulis', N(n)],
+  (n, who) => ['Sekarang,', who, 'coba tulis', N(n)],
+  (n, who) => [who, 'yuk kita tulis', N(n)],
+];
+export const ASK_NEXT_WHO = [
+  (n, who) => [UP('Hebat,'), who, 'sekarang', N(n)],
+  (n, who) => [UP('Pintar,'), who, 'lanjut ke', N(n)],
+  (n, who) => [who, 'ayo lanjut,', N(n)],
+  (n, who) => [UP('Bagus,'), who, 'sekarang giliran', N(n)],
+];
+export const MORE_WHO = [
+  (k, who) => [UP('Bagus,'), who, k === 1 ? 'Sekali lagi ya.' : `${k} kali lagi.`],
+  (k, who) => [UP('Mantap,'), who, k === 1 ? 'Tinggal satu lagi.' : `Tinggal ${k} lagi.`],
+  (k, who) => [who, 'rapi sekali!', k === 1 ? 'Ayo, satu lagi!' : `Ayo, ${k} kali lagi!`],
+];
+export const DONE_WHO = [
+  (n, t, who) => [UP('Hebat,'), who, 'kamu berhasil menulis', N(n), t],
+  (n, t, who) => [UP('Wah, pintar sekali,'), who, 'Tulisan', N(n), 'kamu bagus', t],
+  (n, t, who) => [UP('Keren,'), who, 'satu huruf lagi selesai,', N(n), t],
+  (n, t, who) => [who, 'kamu hebat!', 'Sudah bisa', N(n), t],
+];
+export const CALL_WHO = [
+  (n, who) => [who, 'cepat! Tulis', N(n)],
+  (n, who) => [UP('Ayo,'), who, 'tulis', N(n)],
+  (n, who) => [who, 'lawan dia! Tulis', N(n)],
+];
+export const HIT_WHO = [
+  (who) => [UP('Kena!'), who, 'hebat!'],
+  (who) => [UP('Mantap,'), who, '!'],
+  (who) => [who, 'keren sekali!'],
+];
+export const OUCH_WHO = [
+  (who) => ['Aduh! Ayo coba lagi,', who],
+  (who) => [who, 'semangat ya!'],
+];
+
+// Use the name on roughly half the lines - every single sentence would wear
+// thin fast - and only when we actually know it.
+export function forName(base, named, who) {
+  return who && Math.random() < 0.55 ? named : base;
+}
 export const LEVEL = (lv) => [UP(`Level ${lv}!`), 'Kamu hebat!'];
 export const GAME_OVER = ['Permainan selesai.'];
 

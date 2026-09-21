@@ -55,7 +55,8 @@ export function createTutor() {
       mascot.react('cheer', 1.2);
       const left = total - doneCells;
       say(`Bagus! ${left} kali lagi ya.`, 'good');
-      audio.speakParts(audio.pickLine(lines.MORE, said, 'more')(left));
+      const who = progress.name();
+      audio.speakParts(audio.pickLine(lines.forName(lines.MORE, lines.MORE_WHO, who), said, 'more')(left, who));
     },
     onComplete: ({ stars }) => celebrate(stars),
   });
@@ -76,10 +77,21 @@ export function createTutor() {
     mascot.react('cheer', 3);
     const times = repeat > 1 ? ` Kamu menulis ${repeat} kali!` : '';
     say(`${'⭐'.repeat(stars)} ${CHEER_LINE[(Math.random() * CHEER_LINE.length) | 0]}${times}`, 'good');
-    audio.speakParts(audio.pickLine(lines.DONE, said, 'done')(spokenName(ch), lines.TIMES(repeat)).filter((p) => p && p.text !== ''));
+    const who = progress.name();
+    audio.speakParts(audio.pickLine(lines.forName(lines.DONE, lines.DONE_WHO, who), said, 'done')(
+      spokenName(ch), lines.TIMES(repeat), who).filter(Boolean));
     if (fresh) refreshStars();
     $('t-next').classList.add('pulse');
     setTimeout(() => { celebrating = false; }, 900);
+  }
+
+  // The name sits in the top bar; on a very narrow phone the CSS hides it and
+  // the greeting on the menu carries it instead.
+  function showName() {
+    const chip = $('t-name-chip');
+    const who = progress.name();
+    chip.hidden = !who;
+    $('t-name').textContent = who;
   }
 
   function refreshStars() {
@@ -121,8 +133,11 @@ export function createTutor() {
     const on = strip.querySelector('.letter.on');
     if (on) on.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
     // after finishing a letter the app should sound like it noticed
-    const table = after ? lines.ASK_NEXT : lines.ASK;
-    audio.speakParts(audio.pickLine(table, said, after ? 'next' : 'ask')(spokenName(c)));
+    const who = progress.name();
+    const table = after
+      ? lines.forName(lines.ASK_NEXT, lines.ASK_NEXT_WHO, who)
+      : lines.forName(lines.ASK, lines.ASK_WHO, who);
+    audio.speakParts(audio.pickLine(table, said, after ? 'next' : 'ask')(spokenName(c), who));
     const wantDemo = demo === null ? progress.stars(c) < 2 : demo;
     if (wantDemo) {
       setTimeout(() => {
@@ -176,11 +191,12 @@ export function createTutor() {
   $('t-next').addEventListener('click', () => { audio.sfx('tap'); nextChar(); });
 
   return {
-    pad, mascot,
+    pad, mascot, showName,
     get ch() { return ch; },
     select,
     open() {
       mascot.start();
+      showName();
       setRepeat(repeat);
       buildStrip();
       switchSet(set, lastOf[set]);

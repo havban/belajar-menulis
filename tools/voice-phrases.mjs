@@ -22,18 +22,34 @@ const add = (into, parts) => {
 };
 
 const names = allChars().map(spokenName);
+// The child's name is a part of its own; it cannot be part of a fixed pack, so
+// it is passed as a marker here and dropped from the list.
+const WHO = '\u0000';
 
 for (const n of names) {
   for (const t of L.ASK) add(core, t(n));
   for (const t of L.ASK_NEXT) add(core, t(n));
   for (const t of L.CALL) add(core, t(n));
-  for (const t of L.DONE) for (const k of [1, 2, 3, 4]) add(core, t(n, L.TIMES(k)));
+  for (const t of L.ASK_WHO) add(core, t(n, WHO));
+  for (const t of L.ASK_NEXT_WHO) add(core, t(n, WHO));
+  for (const t of L.CALL_WHO) add(core, t(n, WHO));
+  for (const k of [1, 2, 3, 4]) {
+    for (const t of L.DONE) add(core, t(n, L.TIMES(k)));
+    for (const t of L.DONE_WHO) add(core, t(n, L.TIMES(k), WHO));
+  }
 }
-for (const t of L.MORE) for (const k of [1, 2, 3]) add(core, t(k));
-for (const t of L.HIT) add(core, t);
-for (const t of L.OUCH) add(core, t);
+for (const k of [1, 2, 3]) {
+  for (const t of L.MORE) add(core, t(k));
+  for (const t of L.MORE_WHO) add(core, t(k, WHO));
+}
+for (const t of L.HIT) add(core, t());
+for (const t of L.OUCH) add(core, t());
+for (const t of L.HIT_WHO) add(core, t(WHO));
+for (const t of L.OUCH_WHO) add(core, t(WHO));
 add(core, L.GAME_OVER);
+add(core, ['Halo,', 'ayo kita belajar menulis!']);
 for (let lv = 2; lv <= 9; lv++) add(core, L.LEVEL(lv));
+core.delete('');
 
 // The "listen" button says the example word too - nice to have, not essential.
 for (const ch of allChars()) {
@@ -52,6 +68,10 @@ lalu jalankan \`tools/voice-manifest.sh\`.
 
 Ucapkan dengan nada ceria dan tempo santai, seperti guru TK. Jangan sisakan
 hening panjang di awal/akhir rekaman.
+
+Nama anak tidak ada di daftar ini karena berbeda-beda. Rekam saja satu berkas
+berisi namanya, misalnya \`rani.m4a\` untuk "Rani" — aplikasi memakainya begitu
+nama itu diisi di layar pengaturan.
 
 ## Inti (${core.size} rekaman)
 

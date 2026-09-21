@@ -4,7 +4,7 @@
 
 const KEY = 'belajar-menulis:v1';
 
-const blank = () => ({ stars: {}, best: 0, played: 0, settings: { music: true, sfx: true, voice: true, repeat: 1 } });
+const blank = () => ({ stars: {}, best: 0, played: 0, name: '', settings: { music: true, sfx: true, voice: true, repeat: 1 } });
 
 let data = blank();
 try {
@@ -35,6 +35,16 @@ export function learnedCount() {
 
 export const best = () => data.best;
 export function setBest(n) { if (n > data.best) { data.best = n; save(); } }
+
+// The child's name, tidied: one line, sensible length, first letters capital.
+export const name = () => data.name || '';
+export function setName(n) {
+  // Title case, so "rANi" typed by a five-year-old still reads "Rani".
+  data.name = String(n || '').replace(/\s+/g, ' ').trim().slice(0, 14).toLowerCase()
+    .replace(/(^|[\s'-])(\S)/g, (m, a, b) => a + b.toUpperCase());
+  save();
+  return data.name;
+}
 
 export const prefs = () => data.settings;
 export function setPref(k, v) { data.settings[k] = v; save(); }

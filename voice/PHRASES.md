@@ -7,7 +7,11 @@ lalu jalankan `tools/voice-manifest.sh`.
 Ucapkan dengan nada ceria dan tempo santai, seperti guru TK. Jangan sisakan
 hening panjang di awal/akhir rekaman.
 
-## Inti (134 rekaman)
+Nama anak tidak ada di daftar ini karena berbeda-beda. Rekam saja satu berkas
+berisi namanya, misalnya `rani.m4a` untuk "Rani" — aplikasi memakainya begitu
+nama itu diisi di layar pengaturan.
+
+## Inti (144 rekaman)
 
 Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 
@@ -18,7 +22,7 @@ Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 | `3-kali` | 3 kali. |
 | `3-kali-lagi` | 3 kali lagi. |
 | `4-kali` | 4 kali. |
-| `aduh-ayo-coba-lagi` | Aduh! Ayo coba lagi. |
+| `aduh-ayo-coba-lagi` | Aduh! Ayo coba lagi, |
 | `angka-delapan` | angka delapan |
 | `angka-dua` | angka dua |
 | `angka-empat` | angka empat |
@@ -30,21 +34,25 @@ Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 | `angka-tiga` | angka tiga |
 | `angka-tujuh` | angka tujuh |
 | `awas-musuh-datang` | Awas, musuh datang! |
+| `ayo` | Ayo, |
 | `ayo-2-kali-lagi` | Ayo, 2 kali lagi! |
 | `ayo-3-kali-lagi` | Ayo, 3 kali lagi! |
 | `ayo-coba-lagi` | Ayo coba lagi. |
+| `ayo-kita-belajar-menulis` | ayo kita belajar menulis! |
 | `ayo-kita-tulis` | Ayo, kita tulis |
 | `ayo-kita-tulis-sama-sama` | Ayo kita tulis sama-sama. |
-| `ayo-lanjut` | Ayo lanjut, |
+| `ayo-lanjut` | ayo lanjut, |
 | `ayo-lawan-dia` | Ayo, lawan dia! |
 | `ayo-satu-lagi` | Ayo, satu lagi! |
 | `ayo-tulis` | Ayo tulis! |
-| `bagus` | Bagus! |
+| `bagus` | Bagus, |
 | `bagus-sekali` | Bagus sekali! |
 | `cepat` | Cepat! |
-| `coba-tulis` | Coba tulis |
+| `cepat-tulis` | cepat! Tulis |
+| `coba-tulis` | coba tulis |
+| `halo` | Halo, |
 | `hampir` | Hampir! |
-| `hebat` | Hebat! |
+| `hebat` | hebat! |
 | `huruf-a-besar` | huruf a besar |
 | `huruf-a-kecil` | huruf a kecil |
 | `huruf-be-besar` | huruf be besar |
@@ -101,19 +109,20 @@ Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 | `jangan-menyerah-ya` | Jangan menyerah ya. |
 | `kamu` | kamu |
 | `kamu-bagus` | kamu bagus |
-| `kamu-berhasil-menulis` | Kamu berhasil menulis |
+| `kamu-berhasil-menulis` | kamu berhasil menulis |
 | `kamu-hebat` | Kamu hebat! |
 | `kamu-sudah-bisa` | Kamu sudah bisa |
 | `kena` | Kena! |
 | `kena-bagus-sekali` | Kena! Bagus sekali. |
 | `keren` | Keren! |
-| `keren-sekali` | Keren sekali! |
+| `keren-sekali` | keren sekali! |
 | `kita-lanjut-ke` | Kita lanjut ke |
-| `kita-tulis` | Kita tulis |
+| `kita-tulis` | kita tulis |
 | `kurang-2-lagi-ya` | Kurang 2 lagi ya. |
 | `kurang-3-lagi-ya` | Kurang 3 lagi ya. |
-| `lanjut-ke` | Lanjut ke |
+| `lanjut-ke` | lanjut ke |
 | `lanjut-tulis` | Lanjut, tulis |
+| `lawan-dia-tulis` | lawan dia! Tulis |
 | `level-2` | Level 2! |
 | `level-3` | Level 3! |
 | `level-4` | Level 4! |
@@ -123,30 +132,35 @@ Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 | `level-8` | Level 8! |
 | `level-9` | Level 9! |
 | `luar-biasa` | Luar biasa! |
-| `mantap` | Mantap! |
+| `mantap` | Mantap, |
 | `perhatikan-ya` | Perhatikan ya, |
 | `permainan-selesai` | Permainan selesai. |
 | `pintar` | Pintar! |
-| `rapi-sekali` | Rapi sekali. |
+| `rapi-sekali` | rapi sekali! |
 | `rapi-sekali-tulisan` | Rapi sekali tulisan |
+| `satu-huruf-lagi-selesai` | satu huruf lagi selesai, |
 | `satu-lagi-selesai` | Satu lagi selesai, |
 | `satu-lagi-ya` | Satu lagi ya. |
 | `sekali-lagi-ya` | Sekali lagi ya. |
-| `sekarang` | Sekarang |
+| `sekarang` | sekarang |
 | `sekarang-coba` | Sekarang coba |
-| `sekarang-giliran` | Sekarang giliran |
-| `siap-kita-tulis` | Siap? Kita tulis |
+| `sekarang-giliran` | sekarang giliran |
+| `semangat-ya` | semangat ya! |
+| `siap-kita-tulis` | siap? Kita tulis |
+| `sudah-bisa` | Sudah bisa |
 | `sudah-selesai` | sudah selesai |
 | `terus-begitu` | Terus begitu. |
 | `tinggal-2-lagi` | Tinggal 2 lagi. |
 | `tinggal-3-lagi` | Tinggal 3 lagi. |
 | `tinggal-satu-lagi` | Tinggal satu lagi. |
-| `tulis` | Tulis |
+| `tulis` | tulis |
 | `tulisan` | Tulisan |
 | `wah-kena-semangat` | Wah, kena. Semangat! |
 | `wah-pintar` | Wah, pintar! |
+| `wah-pintar-sekali` | Wah, pintar sekali, |
 | `ya` | ya. |
 | `yuk` | Yuk! |
+| `yuk-kita-tulis` | yuk kita tulis |
 
 ## Tambahan (108 rekaman)
 

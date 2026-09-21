@@ -21,7 +21,7 @@
 <section class="screen show" id="s-menu">
   <div class="menu-inner">
     <h1 class="title">Belajar<span>Menulis</span></h1>
-    <p class="subtitle">Petualangan menulis bersama dino 🦖</p>
+    <p class="subtitle" id="m-greet">Petualangan menulis bersama dino 🦖</p>
     <canvas class="mascot big" id="m-mascot" aria-hidden="true"></canvas>
     <div class="menu-cards">
       <button class="card card-learn" data-go="belajar">
@@ -52,6 +52,7 @@
       <button class="tab" data-set="kecil">abc</button>
       <button class="tab" data-set="angka">123</button>
     </div>
+    <div class="chip name-chip" id="t-name-chip" hidden>🦖 <b id="t-name"></b></div>
     <div class="chip">⭐ <b id="t-stars">0</b></div>
   </header>
   <nav class="strip" id="t-strip" aria-label="Pilih huruf"></nav>
@@ -131,8 +132,25 @@
     <label class="switch"><input type="checkbox" id="set-voice" checked> <span>🗣️ Suara guru</span></label>
     <label class="switch"><input type="checkbox" id="set-full"> <span>⛶ Layar penuh</span></label>
     <div class="panel-btns">
+      <button class="btn" id="set-name">✏️ Ganti Nama</button>
       <button class="btn" id="set-reset">🧹 Hapus Bintang</button>
+    </div>
+    <div class="panel-btns">
       <button class="btn primary" id="set-close">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="s-name">
+  <div class="panel">
+    <h2>Siapa namamu?</h2>
+    <p>Supaya dino bisa memanggil namamu saat belajar.</p>
+    <input class="name-input" id="name-input" type="text" maxlength="14"
+           autocomplete="off" autocapitalize="words" spellcheck="false"
+           enterkeyhint="done" placeholder="Tulis namamu di sini">
+    <div class="panel-btns">
+      <button class="btn" id="name-skip">Nanti saja</button>
+      <button class="btn primary" id="name-save">Simpan</button>
     </div>
   </div>
 </div>
