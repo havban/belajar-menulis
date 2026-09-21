@@ -1,15 +1,8 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Auto-deploy is PAUSED while the letter strokes are being corrected, so that
-  # half-reviewed letters never reach the children using the live site. Pushes
-  # to main are still archived on GitHub, they just do not publish.
-  #
-  # To publish again: un-comment the push trigger below (that commit itself
-  # deploys), or run this workflow by hand from the Actions tab.
-  #
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
