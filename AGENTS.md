@@ -107,6 +107,22 @@ being "too long".
 Wobble decides stars (1–3), never pass or fail. That is deliberate: the habits
 being taught are stroke order, start point and direction.
 
+## The teacher's voice
+
+Spoken lines are built as a **list of parts** (`audio.speakParts`), not one
+string. Each part is its own utterance, which buys a real breath-pause between
+the invitation and the letter, and lets the letter be said slower - that is the
+part the child has to catch. Every part also gets a small random wobble in rate
+and pitch, and the wording rotates through a handful of variants
+(`audio.pickLine` never returns the same one twice running). A fixed sentence
+repeated letter after letter is what makes an app grating to sit next to.
+
+Two traps: the music is ducked under the voice and only un-ducked on `onend`,
+so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice
+the utterance can neither start nor report an error, and the music would stay
+quiet forever. And every call takes a token; stale callbacks from a cancelled
+line must not un-duck or continue a sequence that has been replaced.
+
 ## Gotchas
 
 * **The demo must never steal the pen.** `TracePad.playDemo()` returns early if

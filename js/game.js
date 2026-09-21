@@ -13,6 +13,22 @@ import * as progress from './progress.js?v=__BUILD__';
 const $ = (id) => document.getElementById(id);
 const WIN_WORDS = ['Hebat!', 'Kena!', 'Mantap!', 'Keren!', 'Pukul!'];
 
+// Spoken calls, rotated so the round after this one does not sound the same.
+// Short on purpose: the clock is running while the voice talks.
+const CALL = [
+  (n) => ['Tulis', { text: `${n}!`, rate: 0.88, pitch: 1.2 }],
+  (n) => [{ text: 'Cepat!', pitch: 1.26 }, 'Tulis', { text: `${n}!`, rate: 0.9, pitch: 1.22 }],
+  (n) => ['Sekarang', { text: `${n}!`, rate: 0.88, pitch: 1.18 }],
+  (n) => [{ text: 'Awas, musuh datang!', rate: 1 }, 'Tulis', { text: `${n}!`, rate: 0.9 }],
+];
+const HIT = [
+  ['Kena!'], [{ text: 'Mantap!', pitch: 1.28 }], ['Hebat!'], ['Kena! Bagus sekali.'],
+];
+const OUCH = [
+  ['Aduh! Ayo coba lagi.'], ['Wah, kena. Semangat!'], [{ text: 'Hampir!', pitch: 1.2 }, 'Ayo coba lagi.'],
+];
+const said = { call: -1, hit: -1, ouch: -1 };
+
 export function createGame() {
   const scene = $('g-scene'), sctx = scene.getContext('2d');
   const promptEl = $('g-prompt'), timerEl = $('g-timer'), heartsEl = $('g-hearts');
@@ -95,7 +111,7 @@ export function createGame() {
     pad.enabled = true;
     promptEl.classList.remove('hide');
     showPrompt();
-    audio.speak(`Tulis ${spokenName(S.ch)}`);
+    audio.speakParts(audio.pickLine(CALL, said, 'call')(spokenName(S.ch)));
   }
 
   function succeed() {
@@ -128,9 +144,9 @@ export function createGame() {
       S.level++;
       audio.sfx('star');
       floater(W * 0.5, groundY() - H * 0.5, `Level ${S.level}!`, '#ff4d6d');
-      audio.speak(`Level ${S.level}! Kamu hebat!`);
+      audio.speakParts([{ text: `Level ${S.level}!`, pitch: 1.3 }, 'Kamu hebat!']);
     } else {
-      audio.speak('Kena! Hebat!');
+      audio.speakParts(audio.pickLine(HIT, said, 'hit'));
     }
     updateHud();
   }
@@ -148,7 +164,8 @@ export function createGame() {
     e.vx = -W * 0.9;
     e.vy = e.type === 'ptero' ? 0 : -H * 0.4;
     floater(W * 0.3, groundY() - H * 0.4, '💔', '#ff4d6d');
-    audio.speak(S.hearts > 0 ? 'Aduh! Ayo coba lagi.' : 'Permainan selesai.');
+    if (S.hearts > 0) audio.speakParts(audio.pickLine(OUCH, said, 'ouch'));
+    else audio.speak('Permainan selesai.');
     updateHud();
   }
 

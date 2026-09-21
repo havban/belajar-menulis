@@ -83,7 +83,10 @@ bisa menambah.
 * **Suara.** Musik, efek suara, dan suara guru bisa dimatikan sendiri-sendiri
   lewat tombol ⚙️. Suara guru memakai pembaca teks bawaan perangkat; kalau
   perangkat tidak punya suara bahasa Indonesia, bagian ini diam saja dan
-  aplikasi tetap berjalan normal.
+  aplikasi tetap berjalan normal. Kalimat ajakannya bergantian ("Ayo, kita
+  tulis…", "Sekarang giliran…", "Yuk! Kita tulis…") dan nama hurufnya diucapkan
+  lebih pelan setelah jeda singkat, supaya tidak terdengar seperti robot yang
+  mengulang kalimat sama 26 kali.
 * **Layar penuh.** Di ⚙️ ada pilihan layar penuh supaya jari kecil tidak
   tidak sengaja menekan tombol-tombol peramban.
 * **Pasang di layar depan.** Di Chrome atau Safari, pilih "Tambahkan ke layar

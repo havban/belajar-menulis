@@ -168,12 +168,16 @@ export function sfx(name) {
 
 // ---------------------------------------------------------------- speech
 let idVoice = null, voicesTried = false;
+let speechToken = 0, watchdog = 0;
 
 function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
   const vs = speechSynthesis.getVoices();
   if (!vs.length) return null;
-  idVoice = vs.find((v) => /^id(-|_)?/i.test(v.lang)) || vs.find((v) => /indones/i.test(v.name)) || null;
+  const id = vs.filter((v) => /^id(-|_)?/i.test(v.lang) || /indones/i.test(v.name));
+  // Prefer a warmer voice where the device offers a choice - Damayanti is the
+  // Indonesian voice on iOS, Android usually labels its own.
+  idVoice = id.find((v) => /damayanti|female|wanita|perempuan/i.test(v.name)) || id[0] || null;
   voicesTried = true;
   return idVoice;
 }
@@ -183,25 +187,70 @@ if ('speechSynthesis' in window) {
   pickVoice();
 }
 
+// Drop the music under the teacher's voice, and bring it back afterwards.
+function duck(on) {
+  if (!musicGain || !ctx) return;
+  const base = settings.music ? 0.26 : 0;
+  musicGain.gain.setTargetAtTime(on ? base * 0.35 : base, ctx.currentTime, on ? 0.15 : 0.4);
+}
+
 // Speaks Indonesian if the device has a voice for it; silently does nothing if
 // not, so the app never depends on it.
-export function speak(text, { rate = 0.92, pitch = 1.15 } = {}) {
-  if (!settings.voice || !('speechSynthesis' in window)) return;
+//
+// A sentence is given as a list of parts, each spoken as its own utterance.
+// That buys two things a single long string cannot: a real breath-pause
+// between "ayo kita tulis" and the letter itself, and the chance to slow the
+// letter down so the child actually catches it. Every part also gets a small
+// random wobble in speed and pitch, because a synthetic voice repeating the
+// identical line 26 times in a row is what makes an app grating to sit with.
+export function speakParts(parts, { gap = 130 } = {}) {
+  if (!settings.voice || !('speechSynthesis' in window) || !parts.length) return;
   if (!voicesTried) pickVoice();
+  const list = parts.map((p) => (typeof p === 'string' ? { text: p } : p));
+  const token = ++speechToken;
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'id-ID';
-    if (idVoice) u.voice = idVoice;
-    u.rate = rate; u.pitch = pitch;
-    if (musicGain && ctx) {
-      musicGain.gain.setTargetAtTime(settings.music ? 0.09 : 0, ctx.currentTime, 0.15);
-      u.onend = u.onerror = () => musicGain.gain.setTargetAtTime(settings.music ? 0.26 : 0, ctx.currentTime, 0.4);
-    }
-    speechSynthesis.speak(u);
-  } catch (e) { /* a missing voice must never break the lesson */ }
+    duck(true);
+    // On a device with no Indonesian voice the utterance may never start and
+    // never report an error, which would leave the music ducked for good. This
+    // brings it back after the line could not possibly still be talking.
+    clearTimeout(watchdog);
+    const budget = list.reduce((a, p) => a + p.text.length, 0) * 110 + 2500;
+    watchdog = setTimeout(() => { if (token === speechToken) duck(false); }, budget);
+    let i = 0;
+    const next = () => {
+      if (token !== speechToken) return;            // a newer line took over
+      if (i >= list.length) { clearTimeout(watchdog); duck(false); return; }
+      const p = list[i++];
+      const u = new SpeechSynthesisUtterance(p.text);
+      u.lang = 'id-ID';
+      if (idVoice) u.voice = idVoice;
+      u.rate = (p.rate ?? 0.95) + (Math.random() - 0.5) * 0.10;
+      u.pitch = (p.pitch ?? 1.12) + (Math.random() - 0.5) * 0.16;
+      u.onend = () => { if (token === speechToken) setTimeout(next, p.gap ?? gap); };
+      u.onerror = () => { if (token === speechToken) { clearTimeout(watchdog); duck(false); } };
+      speechSynthesis.speak(u);
+    };
+    next();
+  } catch (e) { clearTimeout(watchdog); duck(false); /* a missing voice must never break the lesson */ }
+}
+
+export function speak(text, opts = {}) {
+  speakParts([{ text, ...opts }]);
+}
+
+// Picks a line at random but never the same one twice running, which is what
+// the ear actually notices. `state` remembers the last index per key.
+export function pickLine(list, state, key = 'last') {
+  let i = Math.floor(Math.random() * list.length);
+  if (list.length > 1 && i === state[key]) i = (i + 1) % list.length;
+  state[key] = i;
+  return list[i];
 }
 
 export function shutUp() {
+  speechToken++;
+  clearTimeout(watchdog);
+  duck(false);
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
