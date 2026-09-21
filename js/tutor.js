@@ -28,12 +28,9 @@ export function createTutor(nav) {
       if (res.pass) {
         fails = 0;
         audio.sfx('pop');
-        const left = pad.strokes.length - pad.index;
-        if (!pad.finished) {
+        if (!pad.finished) {                 // the last stroke is onComplete's job
           say(`Bagus! Sekarang garis ke-${pad.index + 1}.`, 'good');
           mascot.react('cheer', 0.9);
-        } else if (left === 0) {
-          // handled by onComplete
         }
       } else {
         fails++;

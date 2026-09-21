@@ -31,7 +31,8 @@ export function unlock() {
 export function setMusic(on) {
   settings.music = on;
   if (musicGain) musicGain.gain.setTargetAtTime(on ? 0.26 : 0, ctx.currentTime, 0.1);
-  if (on) startMusic();
+  // also stop the scheduler, so switching the music off really costs nothing
+  if (on) startMusic(); else setTimeout(stopMusic, 300);
 }
 
 export function setSfx(on) {

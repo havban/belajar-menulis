@@ -281,25 +281,6 @@ export function drawPtero(c, { x, y, size = 60, t = 0, color = '#f2994a' }) {
   c.restore();
 }
 
-export function drawEgg(c, { x, y, size = 40, crack = 0 }) {
-  c.save();
-  c.translate(x, y);
-  c.scale(size / 100, size / 100);
-  c.fillStyle = '#fdf6e3';
-  ellipse(c, 0, -30, 26, 34); c.fill();
-  c.fillStyle = '#e8c39e';
-  for (let i = 0; i < 6; i++) {
-    ellipse(c, -14 + (i * 37) % 28, -50 + (i * 23) % 44, 4, 3); c.fill();
-  }
-  if (crack > 0) {
-    c.strokeStyle = '#a77b52'; c.lineWidth = 2.5; c.lineJoin = 'round';
-    c.beginPath();
-    c.moveTo(-24, -34); c.lineTo(-10, -26); c.lineTo(2, -38); c.lineTo(14, -28); c.lineTo(24, -36);
-    c.stroke();
-  }
-  c.restore();
-}
-
 // -------------------------------------------------------------- the scenery
 export function drawTree(c, x, groundY, size, t, kind = 0) {
   c.save();

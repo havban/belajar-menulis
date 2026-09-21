@@ -44,7 +44,7 @@ function run() {
         star(cx, 0, 0, b.size, b.color);
       } else if (b.kind === 'text') {
         cx.globalAlpha = Math.min(1, b.life);
-        cx.font = `bold ${b.size}px "Baloo 2", system-ui, sans-serif`;
+        cx.font = `bold ${b.size}px "Segoe UI Rounded", ui-rounded, system-ui, sans-serif`;
         cx.textAlign = 'center';
         cx.lineWidth = b.size * 0.14;
         cx.strokeStyle = '#fff';

@@ -5,7 +5,7 @@
 
 import { SETS, spokenName, setOf } from './glyphs.js?v=__BUILD__';
 import { TracePad, reasonText } from './trace.js?v=__BUILD__';
-import { drawBackdrop, drawRex, drawPtero, shade } from './dino.js?v=__BUILD__';
+import { drawBackdrop, drawRex, drawPtero } from './dino.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
@@ -38,7 +38,6 @@ export function createGame(nav) {
   pad.enabled = false;
 
   function flashPrompt(text) {
-    promptEl.dataset.msg = text;
     promptEl.innerHTML = `<span>${text}</span>`;
     clearTimeout(flashPrompt.timer);
     flashPrompt.timer = setTimeout(showPrompt, 1600);
@@ -111,8 +110,8 @@ export function createGame(nav) {
   function landHit() {
     const e = S.enemy;
     e.dead = true;
-    e.vx = 520 + Math.random() * 160;
-    e.vy = -430;
+    e.vx = W * 0.85 + Math.random() * W * 0.2;
+    e.vy = -H * 1.1;
     e.rot = 0.1;
     audio.sfx('stomp');
     S.shake = 1;
@@ -222,13 +221,14 @@ export function createGame(nav) {
       if (S.timeLeft <= 0) fail();
     } else if (S.phase === 'attack') {
       // lunge out, hit, spring back
-      S.lunge = S.phaseT < 0.3 ? (S.phaseT / 0.3) * W * 0.22 : Math.max(0, (1 - (S.phaseT - 0.3) / 0.5)) * W * 0.22;
+      const reach = W * 0.3;
+      S.lunge = S.phaseT < 0.3 ? (S.phaseT / 0.3) * reach : Math.max(0, (1 - (S.phaseT - 0.3) / 0.5)) * reach;
       if (!e.dead && S.phaseT > 0.26) landHit();
-      if (e.dead) { e.x += e.vx * dt; e.y += e.vy * dt; e.vy += 900 * dt; e.rot += dt * 7; }
+      if (e.dead) { e.x += e.vx * dt; e.y += e.vy * dt; e.vy += H * 2.4 * dt; e.rot += dt * 7; }
       if (S.phaseT > 1.15) { S.lunge = 0; startRound(); }
     } else if (S.phase === 'hurt') {
       e.x += e.vx * dt;
-      if (e.type !== 'ptero') { e.y += e.vy * dt; e.vy += 900 * dt; if (e.y > 0) { e.y = 0; e.vy = 0; } }
+      if (e.type !== 'ptero') { e.y += e.vy * dt; e.vy += H * 2.4 * dt; if (e.y > 0) { e.y = 0; e.vy = 0; } }
       if (S.phaseT > 1.4) {
         if (S.hearts <= 0) gameOver(); else startRound();
       }

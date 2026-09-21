@@ -451,7 +451,12 @@ export class TracePad {
 
     if (!st.dot && st.pts.length > 4) {
       const n = st.pts.length;
-      const [ex, ey] = st.pts[n - 1], [px, py] = st.pts[n - 5];
+      // On a closed stroke (o, a, 8 ...) the end sits on top of the start, so
+      // the arrow would hide the numbered green dot. Put it three quarters of
+      // the way round instead - it still shows which way to go.
+      const [fx, fy] = st.pts[0], [lx, ly] = st.pts[n - 1];
+      const at = Math.hypot(lx - fx, ly - fy) < 9 ? Math.round(n * 0.72) : n - 1;
+      const [ex, ey] = st.pts[at], [px, py] = st.pts[Math.max(0, at - 4)];
       const a = Math.atan2(ey - py, ex - px);
       c.save();
       c.translate(this.X(ex), this.Y(ey));
