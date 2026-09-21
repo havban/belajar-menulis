@@ -35,6 +35,14 @@ Static site, **no build step**. Serve the folder and it runs.
 6. **Comments explain *why*.** The code says what it does; comment the
    constraint or the bug being avoided.
 
+## Licence
+
+AGPL-3.0 (see `LICENSE`). Section 13 matters here because the app is served over
+a network: anyone running a modified copy must offer its Corresponding Source to
+the people using it. That is satisfied by the **"Kode sumber"** link in the
+settings sheet. If you fork and host this, repoint that link at your own
+repository - and do not remove it.
+
 ## Layout
 
 ```

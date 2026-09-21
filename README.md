@@ -171,5 +171,12 @@ dibuka di perangkat sederhana.
 
 ## Lisensi
 
-MIT — lihat [LICENSE](LICENSE). Silakan dipakai di sekolah, dimodifikasi, dan
-dibagikan.
+**AGPL-3.0** — lihat [LICENSE](LICENSE). Silakan dipakai di sekolah, dimodifikasi,
+dan dibagikan; syaratnya, versi yang sudah diubah juga harus dibagikan dengan
+lisensi yang sama.
+
+Karena aplikasi ini dijalankan lewat jaringan, **Pasal 13** AGPL berlaku: siapa
+pun yang meng-_hosting_ versi modifikasinya wajib menawarkan kode sumbernya
+kepada pemakai. Itu sebabnya ada tautan **"Kode sumber"** di layar ⚙️
+Pengaturan. Kalau Anda mem-_fork_ dan meng-_hosting_ sendiri, arahkan tautan itu
+ke repositori Anda — jangan dihapus.

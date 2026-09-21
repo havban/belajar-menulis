@@ -332,6 +332,10 @@ html, body {
   .btn { min-height: 46px; padding: 8px 12px; }
 }
 
+/* AGPL section 13: the running app has to point at its own source */
+.fineprint { margin: 14px 0 0; font-size: 12px; font-weight: 600; color: #7a8a99; }
+.fineprint a { color: var(--blue); }
+
 /* local statistics panel, opened with ?stats=1 - for the grown-ups */
 #statspanel {
   position: fixed; z-index: 120; left: 12px; bottom: 12px;
