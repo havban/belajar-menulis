@@ -6,7 +6,7 @@ const CACHE = `belajar-menulis-${BUILD}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon.svg',
   `./css/style.css?v=${BUILD}`,
-  ...['main', 'glyphs', 'lines', 'trace', 'dino', 'mascot', 'audio', 'fx', 'progress', 'analytics', 'tutor', 'game']
+  ...['main', 'glyphs', 'lines', 'trace', 'dino', 'mascot', 'audio', 'fx', 'progress', 'analytics', 'awards', 'tutor', 'game']
     .map((m) => `./js/${m}.js?v=${BUILD}`),
 ];
 

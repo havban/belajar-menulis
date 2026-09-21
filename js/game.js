@@ -165,6 +165,7 @@ export function createGame() {
   function gameOver() {
     S.phase = 'over';
     progress.setBest(S.score);
+    progress.bumpGames();
     stats.recordGame({
       score: S.score, level: S.level, defeated: S.defeated,
       seconds: S.startedAt ? (performance.now() - S.startedAt) / 1000 : 0,

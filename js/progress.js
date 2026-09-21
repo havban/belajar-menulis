@@ -1,52 +1,218 @@
-// Stars per glyph and the game high score, kept in localStorage. Private
-// browsing or a locked-down browser just means progress is not remembered,
+// Who is writing, and what each of them has achieved.
+//
+// One device is often shared - siblings, or a whole classroom corner - so the
+// store holds a list of profiles and remembers which one is active. Each
+// profile owns its stars, its high score and its practice-repeat setting;
+// sound settings belong to the device.
+//
+// Private browsing or a locked-down browser just means nothing is remembered,
 // which must never stop a child from playing.
 
-const KEY = 'belajar-menulis:v1';
+const KEY = 'belajar-menulis:v2';
+const OLD_KEY = 'belajar-menulis:v1';
 
-const blank = () => ({ stars: {}, best: 0, played: 0, name: '', settings: { music: true, sfx: true, voice: true, repeat: 1 } });
+const today = () => new Date().toISOString().slice(0, 10);
+
+const newProfile = (name = '') => ({
+  id: `p${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+  name,
+  created: today(),
+  seen: today(),
+  stars: {},          // glyph -> 1..3
+  best: 0,            // best game score
+  games: 0,
+  repeat: 1,          // how many times a letter is written per page
+});
+
+const blank = () => ({ v: 2, active: '', profiles: [], settings: { music: true, sfx: true, voice: true } });
+
+// Names are tidied to title case, so "rANi" typed by a five-year-old reads
+// "Rani", and kept short enough to fit the chip in the corner.
+export function tidyName(n) {
+  return String(n || '').replace(/\s+/g, ' ').trim().slice(0, 14).toLowerCase()
+    .replace(/(^|[\s'-])(\S)/g, (m, a, b) => a + b.toUpperCase());
+}
+
+function fixProfile(p) {
+  const base = newProfile();
+  return {
+    ...base, ...p,
+    id: p.id || base.id,
+    name: tidyName(p.name),
+    stars: p.stars && typeof p.stars === 'object' ? p.stars : {},
+    best: Number(p.best) || 0,
+    games: Number(p.games) || 0,
+    repeat: Math.min(4, Math.max(1, Number(p.repeat) || 1)),
+  };
+}
+
+// The single-child store from before this app knew about profiles becomes the
+// first profile, keeping its stars, its score and its settings.
+function migrate(old) {
+  const d = blank();
+  const s = old.settings || {};
+  d.settings = { music: s.music !== false, sfx: s.sfx !== false, voice: s.voice !== false };
+  const p = fixProfile({
+    name: old.name || '',
+    stars: old.stars || {},
+    best: old.best || 0,
+    repeat: s.repeat || 1,
+  });
+  d.profiles = [p];
+  d.active = p.id;
+  return d;
+}
+
+function normalise(raw) {
+  const d = blank();
+  if (raw && typeof raw === 'object') {
+    Object.assign(d.settings, raw.settings || {});
+    d.profiles = Array.isArray(raw.profiles) ? raw.profiles.map(fixProfile) : [];
+    d.active = raw.active || (d.profiles[0] && d.profiles[0].id) || '';
+  }
+  return d;
+}
 
 let data = blank();
 try {
   const raw = localStorage.getItem(KEY);
-  if (raw) data = Object.assign(blank(), JSON.parse(raw));
+  if (raw) data = normalise(JSON.parse(raw));
+  else {
+    const old = localStorage.getItem(OLD_KEY);
+    if (old) data = migrate(JSON.parse(old));
+  }
 } catch (e) { /* ignore */ }
+
+if (!data.profiles.length) {
+  const p = newProfile();
+  data.profiles = [p];
+  data.active = p.id;
+}
+if (!data.profiles.some((p) => p.id === data.active)) data.active = data.profiles[0].id;
 
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
 }
 
-export const stars = (ch) => data.stars[ch] || 0;
+function active() {
+  return data.profiles.find((p) => p.id === data.active) || data.profiles[0];
+}
+
+// ------------------------------------------------------------- profiles
+export const profiles = () => data.profiles.map((p) => ({ ...p, stars: { ...p.stars } }));
+export const activeId = () => data.active;
+export const profileOf = (id) => data.profiles.find((p) => p.id === id) || null;
+export const count = () => data.profiles.length;
+
+export const name = () => active().name || '';
+
+export function setName(n) {
+  active().name = tidyName(n);
+  active().seen = today();
+  save();
+  return active().name;
+}
+
+export function addProfile(n = '') {
+  const p = newProfile(tidyName(n));
+  data.profiles.push(p);
+  data.active = p.id;
+  save();
+  return p.id;
+}
+
+export function switchTo(id) {
+  if (!profileOf(id)) return false;
+  data.active = id;
+  active().seen = today();
+  save();
+  return true;
+}
+
+// Removing the last profile leaves an empty one behind rather than no profile
+// at all, so the app always has somewhere to put the next child's stars.
+export function removeProfile(id) {
+  const i = data.profiles.findIndex((p) => p.id === id);
+  if (i < 0) return false;
+  data.profiles.splice(i, 1);
+  if (!data.profiles.length) data.profiles.push(newProfile());
+  if (!profileOf(data.active)) data.active = data.profiles[0].id;
+  save();
+  return true;
+}
+
+// Everything the achievements screen needs about one child.
+export function summary(id = data.active) {
+  const p = profileOf(id) || active();
+  const vals = Object.values(p.stars);
+  return {
+    id: p.id,
+    name: p.name,
+    stars: vals.reduce((a, b) => a + b, 0),
+    learned: vals.length,
+    mastered: vals.filter((n) => n >= 3).length,
+    best: p.best,
+    games: p.games,
+    created: p.created,
+    seen: p.seen,
+  };
+}
+
+export const starsOf = (id, ch) => (profileOf(id) || active()).stars[ch] || 0;
+
+// -------------------------------------------------- the active child's work
+export const stars = (ch) => active().stars[ch] || 0;
 
 // Only ever improves: a sloppy second attempt cannot take a star away.
 export function award(ch, n) {
-  const had = stars(ch);
-  if (n > had) { data.stars[ch] = n; save(); return true; }
+  const p = active();
+  if (n > (p.stars[ch] || 0)) {
+    p.stars[ch] = n;
+    p.seen = today();
+    save();
+    return true;
+  }
   return false;
 }
 
 export function totalStars() {
-  return Object.values(data.stars).reduce((a, b) => a + b, 0);
+  return Object.values(active().stars).reduce((a, b) => a + b, 0);
 }
 
 export function learnedCount() {
-  return Object.keys(data.stars).length;
+  return Object.keys(active().stars).length;
 }
 
-export const best = () => data.best;
-export function setBest(n) { if (n > data.best) { data.best = n; save(); } }
+export const best = () => active().best;
 
-// The child's name, tidied: one line, sensible length, first letters capital.
-export const name = () => data.name || '';
-export function setName(n) {
-  // Title case, so "rANi" typed by a five-year-old still reads "Rani".
-  data.name = String(n || '').replace(/\s+/g, ' ').trim().slice(0, 14).toLowerCase()
-    .replace(/(^|[\s'-])(\S)/g, (m, a, b) => a + b.toUpperCase());
+export function setBest(n) {
+  const p = active();
+  if (n > p.best) { p.best = n; p.seen = today(); save(); }
+}
+
+export function bumpGames() {
+  active().games += 1;
+  active().seen = today();
   save();
-  return data.name;
 }
 
-export const prefs = () => data.settings;
-export function setPref(k, v) { data.settings[k] = v; save(); }
+// ------------------------------------------------------------- settings
+// Sound belongs to the device; how many times a letter is written belongs to
+// the child, because a five-year-old and an eight-year-old want different
+// amounts of it.
+export const prefs = () => ({ ...data.settings, repeat: active().repeat });
 
-export function reset() { data = blank(); save(); }
+export function setPref(k, v) {
+  if (k === 'repeat') active().repeat = Math.min(4, Math.max(1, Number(v) || 1));
+  else data.settings[k] = v;
+  save();
+}
+
+/** Clears the active child's stars and score, keeping the profile itself. */
+export function reset() {
+  const p = active();
+  p.stars = {};
+  p.best = 0;
+  p.games = 0;
+  save();
+}

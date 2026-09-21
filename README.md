@@ -36,6 +36,11 @@ dibuka, aplikasi ini juga bisa dipakai **tanpa internet**.
   belajar, serta **dipanggil langsung oleh suara**: "Ayo, Rani, kita tulis
   huruf be besar", "Hebat, Rani! Sekarang huruf ce besar". Namanya tidak
   disebut di setiap kalimat, hanya sesekali, supaya tetap terasa wajar.
+* **Beberapa anak dalam satu perangkat.** Tekan tombol nama di menu (atau
+  ⚙️ → 👧 Ganti Anak) untuk membuka daftar anak: pilih siapa yang sedang
+  belajar, tambah anak baru, ganti nama, atau hapus. **Setiap anak punya
+  bintangnya, skor terbaiknya, dan pilihan latihan 1–4× sendiri**, jadi kakak
+  dan adik tidak saling menimpa. Setelan suara berlaku untuk perangkat.
 * **Latihan 1× sampai 4×.** Pilihan **Latihan** di kartu huruf menentukan
   berapa kali huruf yang sama ditulis dalam satu halaman — persis seperti buku
   halus. Kotak yang sedang dikerjakan diberi garis biru, kotak yang sudah
@@ -60,7 +65,23 @@ hati berkurang. Ada 3 hati, skor, dan level yang makin menantang:
 
 Skor terbaik disimpan di perangkat.
 
-### 3. Penghargaan
+### 3. Pencapaian
+
+Tekan tombol **⭐ bintang** di menu untuk membuka layar **Pencapaian** — ringkasan
+yang enak dilihat bersama anak:
+
+* Enam kartu ringkas: jumlah bintang, huruf dikuasai (⭐⭐⭐) dari 62, huruf yang
+  pernah dicoba, skor terbaik, jumlah permainan, dan tanggal mulai belajar.
+* **Lencana**: 🥚 Baru Mulai, 🦖 Petualang Huruf (10 huruf dikuasai), ⭐ Bintang
+  Huruf (30), 👑 Juara Menulis (62), 🔤/🔡/🔢 untuk tiap kelompok yang lengkap,
+  dan 🎮 Pendekar Dino (skor 300+). Lencana yang belum diraih tampil pudar.
+* **Peta huruf**: seluruh A–Z, a–z, dan 0–9 dengan bintang masing-masing —
+  emas untuk ⭐⭐⭐, biru ⭐⭐, oranye ⭐, abu-abu untuk yang belum dicoba. Sekali
+  lihat, orang tua tahu huruf mana yang masih perlu dilatih.
+* Kalau ada lebih dari satu anak di perangkat itu, ada baris nama di atas untuk
+  **melihat pencapaian anak lain** tanpa berpindah profil.
+
+### 4. Penghargaan
 
 Setiap huruf yang berhasil ditulis mendapat **1–3 bintang**, tergantung
 kerapiannya. Saat berhasil: konfeti, bintang beterbangan, kata pujian
@@ -117,7 +138,9 @@ main, skor dan level terbaik. Data ini **tidak pernah dikirim ke mana pun**.
 tanpa cookie, menghormati Do Not Track, dan papan pantauannya di
 <https://havban.goatcounter.com>. Semua event dari aplikasi ini diberi awalan
 `belajar-menulis/` agar tidak tercampur dengan aplikasi lain di papan yang
-sama: `belajar-menulis/huruf-selesai`, `.../bintang-3`, `.../latihan-2x`,
+sama. Kunjungan halaman dihitung **sekali per pemuatan, tanpa query param**
+(jadi `?stats=1` atau `?utm_source=…` tidak menjadi halaman terpisah). Daftar
+event: `belajar-menulis/huruf-selesai`, `.../bintang-3`, `.../latihan-2x`,
 `.../set-kapital`, `.../game-selesai`, `.../skor-500-999`, `.../level-4-6`,
 `.../pengunjung-baru`, dan `.../nama/<nama anak>`.
 
@@ -157,8 +180,9 @@ js/tutor.js         layar belajar
 js/game.js          layar permainan
 js/audio.js         musik dan efek suara (dibangkitkan, bukan berkas audio)
 js/fx.js            konfeti, bintang, kata pujian
-js/progress.js      penyimpanan bintang & skor di perangkat
+js/progress.js      profil anak, bintang & skor (localStorage)
 js/analytics.js     rekap lokal + event agregat (berawalan belajar-menulis/)
+js/awards.js        layar pencapaian: kartu, lencana, peta huruf
 js/lines.js         semua kalimat yang diucapkan, beserta variasinya
 js/main.js          latar belakang, perpindahan layar, pengaturan
 voice/              rekaman suara opsional (lihat voice/README.md)

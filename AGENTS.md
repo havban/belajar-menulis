@@ -57,7 +57,8 @@ js/tutor.js           lesson screen controller
 js/game.js            game screen controller (phases, enemies, scoring)
 js/audio.js           synthesised music, effects and Indonesian speech
 js/fx.js              full-screen confetti/star/praise layer
-js/progress.js        localStorage: stars per glyph, high score, settings, name
+js/progress.js        profiles: stars per glyph, high score, per-child settings
+js/awards.js          achievements screen (tiles, badges, letter map)
 js/analytics.js       local tally + prefixed aggregate events
 js/main.js            backdrop, routing, settings, service worker
 sw.js                 network-first offline cache
@@ -148,6 +149,28 @@ the utterance can neither start nor report an error, and the music would stay
 quiet forever. And every call takes a token; stale callbacks from a cancelled
 line must not un-duck or continue a sequence that has been replaced.
 
+## Profiles
+
+One device is often shared, so `js/progress.js` holds a **list of profiles** and
+remembers which is active. Each profile owns its stars, its high score, its game
+count and its practice-repeat setting; **sound settings belong to the device**
+(`prefs()` merges the two, and `setPref('repeat', n)` writes to the profile
+while everything else writes to the device).
+
+The store is `belajar-menulis:v2`. A `v1` store from before profiles existed is
+**migrated on first read** into a single profile that keeps its stars, score and
+repeat setting - the old key is left in place rather than deleted. If you change
+the shape again, migrate; losing a child's stars is not a recoverable mistake.
+
+`js/awards.js` renders the achievements screen and can show **any** profile, not
+just the active one, which is what the name chips along its top switch between.
+Names come from a keyboard, so that screen builds everything with
+`createElement`/`textContent` and never `innerHTML`.
+
+Anything that displays a name or a star count must be refreshed when the active
+profile changes - `main.js` does that through `afterProfileChange()`, which also
+re-reads the per-child repeat setting in the lesson.
+
 ## Analytics
 
 `js/analytics.js` is the Rhino Rex module, adapted. Two halves: a local tally in
@@ -159,6 +182,12 @@ shared with the other apps, so an unprefixed `game-selesai` or `level-4-6` would
 be indistinguishable from theirs - the prefix is also what lets the dashboard
 filter this app in or out with one term. Page views are not prefixed; their
 path is the real URL.
+
+The page view is counted **once per load with the query string stripped** -
+`index.html` sets `window.goatcounter = { path: () => location.pathname }`
+before count.js loads, and the pixel fallback uses `location.pathname` too.
+Otherwise `?stats=1` and every campaign parameter would file itself as a
+separate page in the dashboard.
 
 Counters are bucketed (`skor-500-999`, `level-4-6`, `hari-aktif-6-19`) so the
 dashboard shows a distribution rather than a long tail of unique numbers, and

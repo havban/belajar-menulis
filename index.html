@@ -19,6 +19,15 @@
      all of them prefixed "belajar-menulis/" so they cannot be confused with
      the other apps on the same dashboard). Delete this tag to switch the
      aggregate half off; the local ?stats=1 panel keeps working. -->
+<script>
+  // Count one page, not one per query string. This is a single-page app: the
+  // only things that ever appear after the "?" are switches for grown-ups
+  // (?stats=1) and whatever a shared link drags along (?utm_source=...,
+  // ?fbclid=...). Left alone, GoatCounter would file each of those as a
+  // separate page and split the same one screen across several rows for no
+  // gain - the referrer is recorded separately anyway.
+  window.goatcounter = { path: () => location.pathname || '/' };
+</script>
 <script data-goatcounter="https://havban.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -44,7 +53,8 @@
       </button>
     </div>
     <div class="menu-foot">
-      <div class="chip">⭐ <b id="m-stars">0</b> bintang</div>
+      <button class="chip chip-btn" id="m-who">🦖 <b id="m-who-name">Anak</b> ▾</button>
+      <button class="chip chip-btn" id="m-awards">⭐ <b id="m-stars">0</b> bintang</button>
       <div class="chip">🏆 Skor <b id="m-best">0</b></div>
       <button class="icon-btn" id="btn-settings" aria-label="Pengaturan">⚙️</button>
     </div>
@@ -88,6 +98,17 @@
     <button class="btn" id="t-say">🔊 Dengar</button>
     <button class="btn primary" id="t-next">Lanjut ➜</button>
   </footer>
+</section>
+
+<!-- ----------------------------------------------------- pencapaian -->
+<section class="screen" id="s-pencapaian">
+  <header class="bar">
+    <button class="icon-btn" data-back aria-label="Kembali">‹</button>
+    <h2 class="bar-title">Pencapaian</h2>
+    <div class="chip" id="a-who">🦖 <b>—</b></div>
+  </header>
+  <nav class="strip who-strip" id="a-tabs" aria-label="Pilih anak"></nav>
+  <main class="awards" id="a-body"></main>
 </section>
 
 <!-- ------------------------------------------------------------ game -->
@@ -140,6 +161,7 @@
     <label class="switch"><input type="checkbox" id="set-voice" checked> <span>🗣️ Suara guru</span></label>
     <label class="switch"><input type="checkbox" id="set-full"> <span>⛶ Layar penuh</span></label>
     <div class="panel-btns">
+      <button class="btn" id="set-profiles">👧 Ganti Anak</button>
       <button class="btn" id="set-name">✏️ Ganti Nama</button>
       <button class="btn" id="set-reset">🧹 Hapus Bintang</button>
     </div>
@@ -153,10 +175,22 @@
   </div>
 </div>
 
+<div class="overlay hidden" id="s-profiles">
+  <div class="panel wide">
+    <h2>Siapa yang belajar?</h2>
+    <p>Setiap anak punya bintang dan skornya sendiri.</p>
+    <div class="profile-list" id="p-list"></div>
+    <div class="panel-btns">
+      <button class="btn" id="p-add">➕ Tambah Anak</button>
+      <button class="btn primary" id="p-close">Selesai</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay hidden" id="s-name">
   <div class="panel">
-    <h2>Siapa namamu?</h2>
-    <p>Supaya dino bisa memanggil namamu saat belajar.</p>
+    <h2 id="name-title">Siapa namamu?</h2>
+    <p id="name-sub">Supaya dino bisa memanggil namamu saat belajar.</p>
     <input class="name-input" id="name-input" type="text" maxlength="14"
            autocomplete="off" autocapitalize="words" spellcheck="false"
            enterkeyhint="done" placeholder="Tulis namamu di sini">

@@ -199,11 +199,18 @@ export function createTutor() {
 
   return {
     pad, mascot, showName,
+    // the active child changed: their repeat setting and their stars differ
+    refreshFromProfile() {
+      repeat = Math.max(1, Math.min(4, progress.prefs().repeat || 1));
+      setRepeat(repeat);
+      if (ch) { refreshStars(); pad.setGlyph(ch, { repeat }); }
+    },
     get ch() { return ch; },
     select,
     open() {
       mascot.start();
       showName();
+      repeat = Math.max(1, Math.min(4, progress.prefs().repeat || 1));
       setRepeat(repeat);
       buildStrip();
       switchSet(set, lastOf[set]);

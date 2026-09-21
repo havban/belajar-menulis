@@ -19,6 +19,11 @@
  * working. To send somewhere else instead, set
  * window.__bmTrack = (path, title, isEvent) => {...}.
  *
+ * The page view itself is counted once per load, with the query string
+ * stripped (see the inline `window.goatcounter = { path: ... }` in index.html):
+ * ?stats=1 and campaign parameters should not each become their own page. The
+ * pixel fallback below does the same.
+ *
  * Dashboard: https://havban.goatcounter.com
  */
 

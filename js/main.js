@@ -4,12 +4,13 @@ import { drawBackdrop } from './dino.js?v=__BUILD__';
 import { Mascot } from './mascot.js?v=__BUILD__';
 import { createTutor } from './tutor.js?v=__BUILD__';
 import { createGame } from './game.js?v=__BUILD__';
+import { createAwards } from './awards.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as stats from './analytics.js?v=__BUILD__';
 
 const $ = (id) => document.getElementById(id);
-const screens = { menu: $('s-menu'), belajar: $('s-belajar'), game: $('s-game') };
+const screens = { menu: $('s-menu'), belajar: $('s-belajar'), game: $('s-game'), pencapaian: $('s-pencapaian') };
 let current = 'menu';
 
 // ---------------------------------------------------------- backdrop
@@ -55,6 +56,7 @@ function refreshMenu() {
   $('m-stars').textContent = progress.totalStars();
   $('m-best').textContent = progress.best();
   const who = progress.name();
+  $('m-who-name').textContent = who || 'Anak';
   $('m-greet').textContent = who
     ? `Halo, ${who}! Ayo belajar menulis 🦖`
     : 'Petualangan menulis bersama dino 🦖';
@@ -63,24 +65,118 @@ function refreshMenu() {
 // ---------------------------------------------------------- the name
 const nameBox = $('s-name'), nameInput = $('name-input');
 
-function askName() {
-  nameInput.value = progress.name();
+let nameMode = 'edit';                   // 'edit' renames, 'add' creates a child
+
+function askName(mode = 'edit') {
+  nameMode = mode;
+  nameInput.value = mode === 'add' ? '' : progress.name();
+  $('name-title').textContent = mode === 'add' ? 'Siapa namanya?' : 'Siapa namamu?';
+  $('name-sub').textContent = mode === 'add'
+    ? 'Anak baru ini punya bintang dan skornya sendiri.'
+    : 'Supaya dino bisa memanggil namamu saat belajar.';
   nameBox.classList.remove('hidden');
   setTimeout(() => nameInput.focus(), 60);
 }
 
 function saveName() {
   audio.unlock();
-  const who = progress.setName(nameInput.value);
+  const typed = nameInput.value;
+  if (nameMode === 'add') {
+    if (!progress.tidyName(typed)) { nameBox.classList.add('hidden'); return; }
+    progress.addProfile(typed);
+    stats.once('profil-ditambah', 'Menambah anak');
+  } else {
+    progress.setName(typed);
+  }
+  const who = progress.name();
   nameBox.classList.add('hidden');
-  refreshMenu();
-  tutor.showName();
+  afterProfileChange();
   stats.trackName(who);
   if (who) {
     audio.sfx('star');
     audio.speakParts([{ text: 'Halo,', pitch: 1.25 }, who, 'ayo kita belajar menulis!']);
   }
 }
+
+// Everything that shows a name or a star count has to catch up when the active
+// profile changes.
+function afterProfileChange() {
+  refreshMenu();
+  tutor.showName();
+  tutor.refreshFromProfile();
+  if (current === 'pencapaian') awards.render();
+}
+
+// ------------------------------------------------------- profile picker
+const profileBox = $('s-profiles');
+
+function renderProfiles() {
+  const list = $('p-list');
+  list.textContent = '';
+  const activeId = progress.activeId();
+  for (const p of progress.profiles()) {
+    const sum = progress.summary(p.id);
+    const row = document.createElement('div');
+    row.className = 'profile-row';
+
+    const pick = document.createElement('button');
+    pick.className = `profile-pick${p.id === activeId ? ' on' : ''}`;
+    const nm = document.createElement('span');
+    nm.textContent = p.name || 'Anak';
+    const sub = document.createElement('span');
+    sub.className = 'sub';
+    sub.textContent = `⭐ ${sum.stars} · 🏆 ${sum.best}`;
+    pick.append(nm, sub);
+    pick.addEventListener('click', () => {
+      audio.sfx('pop');
+      progress.switchTo(p.id);
+      stats.once('profil-ganti', 'Berganti anak');
+      stats.trackName(progress.name());
+      profileBox.classList.add('hidden');
+      afterProfileChange();
+      const who = progress.name();
+      if (who) audio.speakParts([{ text: 'Halo,', pitch: 1.25 }, who]);
+    });
+
+    const rename = document.createElement('button');
+    rename.className = 'icon-btn';
+    rename.textContent = '✏️';
+    rename.title = 'Ganti nama';
+    rename.addEventListener('click', () => {
+      audio.sfx('tap');
+      progress.switchTo(p.id);
+      profileBox.classList.add('hidden');
+      afterProfileChange();
+      askName('edit');
+    });
+
+    const del = document.createElement('button');
+    del.className = 'icon-btn';
+    del.textContent = '🗑️';
+    del.title = 'Hapus anak';
+    del.addEventListener('click', () => {
+      audio.sfx('tap');
+      const label = p.name || 'anak ini';
+      if (!confirm(`Hapus ${label} beserta semua bintangnya?`)) return;
+      progress.removeProfile(p.id);
+      renderProfiles();
+      afterProfileChange();
+    });
+
+    row.append(pick, rename, del);
+    list.append(row);
+  }
+}
+
+function openProfiles() {
+  renderProfiles();
+  profileBox.classList.remove('hidden');
+}
+
+$('m-who').addEventListener('click', () => { audio.sfx('tap'); openProfiles(); });
+$('m-awards').addEventListener('click', () => { audio.sfx('tap'); show('pencapaian'); });
+$('p-add').addEventListener('click', () => { audio.sfx('tap'); profileBox.classList.add('hidden'); askName('add'); });
+$('p-close').addEventListener('click', () => { audio.sfx('tap'); profileBox.classList.add('hidden'); });
 
 $('name-save').addEventListener('click', saveName);
 $('name-skip').addEventListener('click', () => { audio.sfx('tap'); nameBox.classList.add('hidden'); });
@@ -89,11 +185,13 @@ nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveName()
 // ------------------------------------------------------------ router
 const tutor = createTutor();
 const game = createGame();
-const parts = { belajar: tutor, game };
+const awards = createAwards();
+const parts = { belajar: tutor, game, pencapaian: awards };
 
 const SCREEN_EVENT = {
   belajar: ['belajar-dibuka', 'Membuka layar belajar'],
   game: ['game-dibuka', 'Membuka permainan'],
+  pencapaian: ['pencapaian-dibuka', 'Membuka pencapaian'],
 };
 
 function show(name) {
@@ -135,7 +233,8 @@ $('set-sfx').checked = prefs.sfx;
 $('set-voice').checked = prefs.voice;
 
 $('btn-settings').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.remove('hidden'); });
-$('set-name').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); askName(); });
+$('set-name').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); askName('edit'); });
+$('set-profiles').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); openProfiles(); });
 $('set-close').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); });
 $('set-music').addEventListener('change', (e) => { audio.unlock(); audio.setMusic(e.target.checked); progress.setPref('music', e.target.checked); });
 $('set-sfx').addEventListener('change', (e) => { audio.unlock(); audio.setSfx(e.target.checked); progress.setPref('sfx', e.target.checked); audio.sfx('pop'); });
@@ -152,10 +251,10 @@ document.addEventListener('fullscreenchange', () => { full.checked = !!document.
 if (!document.documentElement.requestFullscreen) full.parentElement.style.display = 'none';
 
 $('set-reset').addEventListener('click', () => {
-  if (confirm('Hapus semua bintang dan skor?')) {
+  const who = progress.name() || 'anak ini';
+  if (confirm(`Hapus semua bintang dan skor ${who}?`)) {
     progress.reset();
-    refreshMenu();
-    tutor.showName();
+    afterProfileChange();
     audio.sfx('bad');
   }
 });
@@ -200,4 +299,4 @@ if (!progress.name()) {
   setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
 }
 
-window.__app = { show, progress, audio, stats, askName, get screen() { return current; }, tutor, game };
+window.__app = { show, progress, audio, stats, askName, openProfiles, awards, get screen() { return current; }, tutor, game };
