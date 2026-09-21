@@ -150,8 +150,15 @@ that is how the `3`, `5`, `8`, `S`, `s`, `f` and `k` shapes were corrected.
 
 ## Deploying
 
-Push to `main`; the workflow stamps the build, syntax-checks every module and
-publishes to Pages. Note from the sibling repos: **Pages must be enabled by
+**Auto-deploy is paused right now.** The `push` trigger in
+`.github/workflows/pages.yml` is commented out while the letter strokes are
+being reviewed one by one, so pushing to `main` archives the work without
+publishing it. Restore the trigger (or run the workflow from the Actions tab)
+once the review is finished — and say so, because a paused deploy is invisible
+from the live site.
+
+Normally: push to `main`; the workflow stamps the build, syntax-checks every
+module and publishes to Pages. Note from the sibling repos: **Pages must be enabled by
 hand once** in Settings → Pages → Source: "GitHub Actions". A workflow with
 `enablement: true` cannot do it with `GITHUB_TOKEN`, and the failure shows up
 as `actions/configure-pages` erroring out.
