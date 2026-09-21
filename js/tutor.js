@@ -131,6 +131,7 @@ export function createTutor() {
     const base = n > 1 ? `Ada ${n} garis. Mulai dari titik hijau!` : 'Mulai dari titik hijau, ikuti panahnya!';
     say(repeat > 1 ? `${base} Tulis ${repeat} kali ya.` : base);
     $('t-next').classList.remove('pulse');
+    progress.rememberSession({ screen: 'belajar', set, ch: c });
     for (const el of strip.children) el.classList.toggle('on', el.dataset.ch === c);
     const on = strip.querySelector('.letter.on');
     if (on) on.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
@@ -199,6 +200,10 @@ export function createTutor() {
 
   return {
     pad, mascot, showName,
+    // pick up exactly where the child left off, before open() runs
+    resumeAt(s, c) {
+      if (SETS[s]) { set = s; if (c && SETS[s].chars.includes(c)) lastOf[s] = c; }
+    },
     // the active child changed: their repeat setting and their stars differ
     refreshFromProfile() {
       repeat = Math.max(1, Math.min(4, progress.prefs().repeat || 1));

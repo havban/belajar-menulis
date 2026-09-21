@@ -59,6 +59,7 @@ js/audio.js           synthesised music, effects and Indonesian speech
 js/fx.js              full-screen confetti/star/praise layer
 js/progress.js        profiles: stars per glyph, high score, per-child settings
 js/awards.js          achievements screen (tiles, badges, letter map)
+js/update.js          new-build check, reload, AGPL source stamp
 js/analytics.js       local tally + prefixed aggregate events
 js/main.js            backdrop, routing, settings, service worker
 sw.js                 network-first offline cache
@@ -170,6 +171,27 @@ Names come from a keyboard, so that screen builds everything with
 Anything that displays a name or a star count must be refreshed when the active
 profile changes - `main.js` does that through `afterProfileChange()`, which also
 re-reads the per-child repeat setting in the lesson.
+
+## Updates and picking up where you left off
+
+`js/update.js` (ported from Rhino Rex) polls `version.json` and compares it with
+`<meta name="build">`; both are written by the deploy workflow, so the page can
+tell "a new build exists" from "I am that build". When they differ a toast
+offers a reload - the child is never interrupted mid-letter.
+
+The reload goes through `location.replace` with a `?v=` cache-buster and asks
+the service worker to update first: GitHub Pages serves `max-age=600`, so a
+plain reload can hand back the very JavaScript being replaced. **`version.json`
+is excluded from the service worker cache** - the poll appends a fresh `?t=`
+each time, which would otherwise pile up one cache entry per poll and serve a
+stale build number offline.
+
+`progress.rememberSession()` records the screen, the set and letter in the
+lesson, and whose achievements were on show, under its own storage key so a
+broken session can never take a child's stars with it. `main.js` restores it at
+boot, which is what makes the update reload painless: the child comes back to
+the same letter. `update.stampSourceLink()` also points the AGPL source link at
+the exact running commit rather than the default branch.
 
 ## Analytics
 

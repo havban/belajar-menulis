@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="description" content="Belajar menulis huruf kapital, huruf kecil, dan angka sambil bermain bersama dinosaurus. Untuk anak TK dan SD, bisa ditulis langsung di layar sentuh.">
 <meta name="theme-color" content="#59c8f5">
+<meta name="build" content="__BUILD__">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -146,6 +147,7 @@
       <p>Musuh datang! Tulis huruf yang diminta dengan benar,
          lalu dino kamu akan menyerang. Ada 3 nyawa ❤️❤️❤️</p>
       <div class="panel-btns">
+        <button class="btn" data-back>🏠 Menu</button>
         <button class="btn primary" id="gs-go">🚀 Mulai!</button>
       </div>
     </div>
@@ -169,7 +171,7 @@
       <button class="btn primary" id="set-close">Selesai</button>
     </div>
     <p class="fineprint">
-      <a href="https://github.com/havban/belajar-menulis" target="_blank" rel="noopener">Kode sumber</a>
+      <a id="src-link" href="https://github.com/havban/belajar-menulis" target="_blank" rel="noopener">Kode sumber</a>
       · Lisensi AGPL-3.0
     </p>
   </div>
@@ -199,6 +201,12 @@
       <button class="btn primary" id="name-save">Simpan</button>
     </div>
   </div>
+</div>
+
+<div class="toast hidden" id="update-toast" role="status">
+  <span>✨ Ada versi baru!</span>
+  <button class="btn primary" id="btn-update">Muat Ulang</button>
+  <button class="icon-btn" id="btn-update-later" aria-label="Nanti">✕</button>
 </div>
 
 <script type="module" src="js/main.js?v=__BUILD__"></script>

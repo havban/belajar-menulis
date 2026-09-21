@@ -6,7 +6,7 @@ const CACHE = `belajar-menulis-${BUILD}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './icon.svg',
   `./css/style.css?v=${BUILD}`,
-  ...['main', 'glyphs', 'lines', 'trace', 'dino', 'mascot', 'audio', 'fx', 'progress', 'analytics', 'awards', 'tutor', 'game']
+  ...['main', 'glyphs', 'lines', 'trace', 'dino', 'mascot', 'audio', 'fx', 'progress', 'analytics', 'awards', 'update', 'tutor', 'game']
     .map((m) => `./js/${m}.js?v=${BUILD}`),
 ];
 
@@ -25,6 +25,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  // The update check polls version.json with a fresh ?t= every few minutes.
+  // Caching those would pile up an entry per poll and serve a stale build
+  // number offline, so it is left to the browser entirely.
+  if (url.pathname.endsWith('/version.json')) return;
   e.respondWith(
     fetch(e.request)
       .then((res) => {

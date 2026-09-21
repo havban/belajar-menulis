@@ -83,7 +83,12 @@ export function createAwards(nav) {
     tabs.hidden = list.length < 2;      // one child: nothing to switch between
     for (const p of list) {
       const b = el('button', `who-chip${p.id === viewing ? ' on' : ''}`, p.name || 'Anak');
-      b.addEventListener('click', () => { audio.sfx('tap'); viewing = p.id; render(); });
+      b.addEventListener('click', () => {
+        audio.sfx('tap');
+        viewing = p.id;
+        progress.rememberSession({ screen: 'pencapaian', awards: viewing });
+        render();
+      });
       tabs.append(b);
     }
   }
@@ -130,8 +135,9 @@ export function createAwards(nav) {
   return {
     render,
     get viewing() { return viewing; },
-    open() {
-      viewing = progress.activeId();
+    viewAt(id) { if (progress.profileOf(id)) viewing = id; },
+    open(resume) {
+      viewing = (resume && progress.profileOf(resume) && resume) || progress.activeId();
       stats.once('pencapaian-dibuka', 'Membuka pencapaian');
       render();
     },

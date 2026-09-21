@@ -333,6 +333,22 @@ html, body {
   .btn { min-height: 46px; padding: 8px 12px; }
 }
 
+/* ------------------------------------------------- pemberitahuan versi */
+.toast {
+  position: fixed; z-index: 130; left: 50%; bottom: calc(74px + var(--pad-bot));
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; white-space: nowrap;
+  padding: 8px 10px 8px 18px; border-radius: 999px;
+  background: rgba(255, 255, 255, .96); border: 3px solid #fff;
+  box-shadow: var(--shadow);
+  font-weight: 800; font-size: clamp(13px, 3vmin, 17px);
+  animation: toast-in .4s cubic-bezier(.2, 1.6, .5, 1);
+}
+.toast.hidden { display: none; }
+.toast .btn { min-height: 44px; padding: 8px 18px; flex: 0 0 auto; }
+.toast .icon-btn { width: 40px; height: 40px; min-width: 40px; font-size: 17px; box-shadow: none; background: transparent; }
+@keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(16px); } }
+
 /* ------------------------------------------------------ pencapaian */
 .bar-title { margin: 0 auto 0 4px; font-size: clamp(17px, 4vmin, 24px); color: #fff;
   text-shadow: 0 2px 6px rgba(0, 0, 0, .35); }

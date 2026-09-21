@@ -90,6 +90,29 @@ if (!data.profiles.length) {
 }
 if (!data.profiles.some((p) => p.id === data.active)) data.active = data.profiles[0].id;
 
+// Where the app was when it was last closed - screen, which letter, whose
+// achievements were on show. Kept apart from the profiles so a broken session
+// can never take a child's stars with it.
+const LAST_KEY = 'belajar-menulis:last';
+
+export function lastSession() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(LAST_KEY) || 'null');
+    return raw && typeof raw === 'object' ? raw : null;
+  } catch (e) { return null; }
+}
+
+export function rememberSession(patch) {
+  try {
+    const next = { ...(lastSession() || {}), ...patch, at: Date.now() };
+    localStorage.setItem(LAST_KEY, JSON.stringify(next));
+  } catch (e) { /* ignore */ }
+}
+
+export function forgetSession() {
+  try { localStorage.removeItem(LAST_KEY); } catch (e) { /* ignore */ }
+}
+
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
 }

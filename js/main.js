@@ -5,6 +5,7 @@ import { Mascot } from './mascot.js?v=__BUILD__';
 import { createTutor } from './tutor.js?v=__BUILD__';
 import { createGame } from './game.js?v=__BUILD__';
 import { createAwards } from './awards.js?v=__BUILD__';
+import * as update from './update.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as stats from './analytics.js?v=__BUILD__';
@@ -204,6 +205,7 @@ function show(name) {
   if (name === 'menu') { refreshMenu(); menuMascot.start(); } else menuMascot.stop();
   const part = parts[name];
   if (part) part.open();
+  progress.rememberSession({ screen: name });
   if (SCREEN_EVENT[name]) stats.once(...SCREEN_EVENT[name]);
 }
 
@@ -216,7 +218,12 @@ for (const el of document.querySelectorAll('[data-go]')) {
   });
 }
 for (const el of document.querySelectorAll('[data-back]')) {
-  el.addEventListener('click', () => { audio.sfx('tap'); show('menu'); });
+  el.addEventListener('click', () => {
+    audio.sfx('tap');
+    $('g-start').classList.add('hidden');
+    $('g-over').classList.add('hidden');
+    show('menu');
+  });
 }
 
 // The Android back button should walk back to the menu, not leave the app.
@@ -278,6 +285,24 @@ document.addEventListener('dblclick', (e) => e.preventDefault());
 // A recorded voice pack replaces the device's text-to-speech where it exists.
 audio.loadVoicePack().then((n) => { if (n) console.info(`[suara] ${n} rekaman dimuat`); });
 
+// ------------------------------------------------- new build available
+// The deploy stamps its commit into <meta name="build"> and writes
+// version.json; when those disagree, a newer build is live. The child is not
+// interrupted - a toast waits until they choose to reload, and because the
+// screen and letter they are on are already saved, the reload puts them back.
+const toast = $('update-toast');
+update.stampSourceLink('https://github.com/havban/belajar-menulis');
+update.watch((build) => {
+  toast.classList.remove('hidden');
+  stats.event('versi-baru', 'Versi baru terdeteksi');
+  $('btn-update').onclick = () => {
+    stats.event('versi-baru-dimuat', 'Muat ulang ke versi baru');
+    progress.rememberSession({ screen: current });
+    update.reload(build);
+  };
+});
+$('btn-update-later').addEventListener('click', () => { audio.sfx('tap'); toast.classList.add('hidden'); });
+
 // Offline support; harmless if the browser or the page's origin refuses it.
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
@@ -292,6 +317,16 @@ if (/[?&]stats=1/.test(location.search)) stats.mountPanel();
 window.__stats = () => stats.mountPanel();
 
 refreshMenu();
+
+// Back to where the app was left - after an update reload, or just the next
+// time the tablet is picked up. The menu is always the fallback.
+const last = progress.lastSession();
+if (last && last.screen && last.screen !== 'menu' && screens[last.screen]) {
+  if (last.screen === 'belajar') tutor.resumeAt(last.set, last.ch);
+  if (last.screen === 'pencapaian') awards.viewAt(last.awards);
+  show(last.screen);
+}
+
 // First visit: ask who is about to write, so the dino can use their name - but
 // only if they are still looking at the menu. A child who has already tapped
 // through to a lesson should not have a dialog land on top of their writing.
@@ -299,4 +334,4 @@ if (!progress.name()) {
   setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
 }
 
-window.__app = { show, progress, audio, stats, askName, openProfiles, awards, get screen() { return current; }, tutor, game };
+window.__app = { show, progress, audio, stats, update, askName, openProfiles, awards, get screen() { return current; }, tutor, game };

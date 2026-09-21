@@ -121,6 +121,12 @@ bisa menambah.
   direkam tetap dibacakan perangkat, jadi rekaman boleh dicicil.
 * **Layar penuh.** Di ⚙️ ada pilihan layar penuh supaya jari kecil tidak
   tidak sengaja menekan tombol-tombol peramban.
+* **Pemberitahuan versi baru.** Kalau aplikasi diperbarui saat sedang dipakai,
+  muncul pesan kecil **"✨ Ada versi baru!"** dengan tombol **Muat Ulang** (dan
+  ✕ kalau mau nanti saja). Anak tidak dipaksa berhenti — pesannya menunggu.
+* **Kembali ke tempat terakhir.** Aplikasi mengingat layar dan huruf terakhir,
+  jadi setelah dimuat ulang (atau saat tablet dibuka lagi besok) anak langsung
+  kembali ke huruf yang sedang dilatih, bukan ke menu.
 * **Pasang di layar depan.** Di Chrome atau Safari, pilih "Tambahkan ke layar
   utama" agar aplikasi terbuka seperti aplikasi biasa dan bisa dipakai offline.
 * **Menghapus bintang** (misalnya untuk anak berikutnya) ada di ⚙️.
