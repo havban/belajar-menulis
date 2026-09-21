@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Belajar Menulis - Petualangan Dino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Belajar menulis huruf kapital, huruf kecil, dan angka sambil bermain bersama dinosaurus. Untuk anak TK dan SD, bisa ditulis langsung di layar sentuh.">
+<meta name="theme-color" content="#59c8f5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="css/style.css?v=__BUILD__">
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+
+<!-- ------------------------------------------------------------ menu -->
+<section class="screen show" id="s-menu">
+  <div class="menu-inner">
+    <h1 class="title">Belajar<span>Menulis</span></h1>
+    <p class="subtitle">Petualangan menulis bersama dino 🦖</p>
+    <canvas class="mascot big" id="m-mascot" aria-hidden="true"></canvas>
+    <div class="menu-cards">
+      <button class="card card-learn" data-go="belajar">
+        <span class="card-emoji">✏️</span>
+        <span class="card-title">Belajar Menulis</span>
+        <span class="card-sub">Huruf &amp; angka, satu per satu</span>
+      </button>
+      <button class="card card-play" data-go="game">
+        <span class="card-emoji">🎮</span>
+        <span class="card-title">Main Game</span>
+        <span class="card-sub">Tulis huruf, kalahkan musuh!</span>
+      </button>
+    </div>
+    <div class="menu-foot">
+      <div class="chip">⭐ <b id="m-stars">0</b> bintang</div>
+      <div class="chip">🏆 Skor <b id="m-best">0</b></div>
+      <button class="icon-btn" id="btn-settings" aria-label="Pengaturan">⚙️</button>
+    </div>
+  </div>
+</section>
+
+<!-- --------------------------------------------------------- belajar -->
+<section class="screen" id="s-belajar">
+  <header class="bar">
+    <button class="icon-btn" data-back aria-label="Kembali">‹</button>
+    <div class="tabs" id="t-tabs">
+      <button class="tab on" data-set="kapital">ABC</button>
+      <button class="tab" data-set="kecil">abc</button>
+      <button class="tab" data-set="angka">123</button>
+    </div>
+    <div class="chip">⭐ <b id="t-stars">0</b></div>
+  </header>
+  <nav class="strip" id="t-strip" aria-label="Pilih huruf"></nav>
+  <main class="stage">
+    <aside class="info">
+      <div class="big-letter" id="t-big">A</div>
+      <div class="word"><span class="emoji" id="t-emoji">🐔</span><span id="t-word">Ayam</span></div>
+      <canvas class="mascot" id="t-mascot" aria-hidden="true"></canvas>
+      <p class="tip" id="t-tip">Ikuti garis putus-putus dari titik hijau!</p>
+    </aside>
+    <div class="pad-wrap">
+      <canvas id="t-pad" class="pad"></canvas>
+    </div>
+  </main>
+  <footer class="controls">
+    <button class="btn" id="t-demo">👀 Contoh</button>
+    <button class="btn" id="t-clear">🔄 Ulangi</button>
+    <button class="btn" id="t-say">🔊 Dengar</button>
+    <button class="btn primary" id="t-next">Lanjut ➜</button>
+  </footer>
+</section>
+
+<!-- ------------------------------------------------------------ game -->
+<section class="screen" id="s-game">
+  <header class="bar">
+    <button class="icon-btn" data-back aria-label="Kembali">‹</button>
+    <div class="hearts" id="g-hearts"></div>
+    <div class="chip">🏆 <b id="g-score">0</b></div>
+    <div class="chip">Lv <b id="g-level">1</b></div>
+  </header>
+  <div class="play">
+  <div class="arena">
+    <canvas id="g-scene"></canvas>
+    <div class="prompt" id="g-prompt"><span>Tulis</span> <b>A</b></div>
+    <div class="timer"><i id="g-timer"></i></div>
+  </div>
+  <div class="pad-wrap game">
+    <canvas id="g-pad" class="pad"></canvas>
+  </div>
+  </div>
+  <div class="overlay hidden" id="g-over">
+    <div class="panel">
+      <h2 id="go-title">Permainan Selesai!</h2>
+      <p class="go-score">Skor kamu: <b id="go-score">0</b></p>
+      <p class="go-best">Skor terbaik: <b id="go-best">0</b></p>
+      <div class="panel-btns">
+        <button class="btn primary" id="go-again">🔁 Main Lagi</button>
+        <button class="btn" data-back>🏠 Menu</button>
+      </div>
+    </div>
+  </div>
+  <div class="overlay hidden" id="g-start">
+    <div class="panel">
+      <h2>Petualangan Dino</h2>
+      <p>Musuh datang! Tulis huruf yang diminta dengan benar,
+         lalu dino kamu akan menyerang. Ada 3 nyawa ❤️❤️❤️</p>
+      <div class="panel-btns">
+        <button class="btn primary" id="gs-go">🚀 Mulai!</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- -------------------------------------------------------- settings -->
+<div class="overlay hidden" id="s-settings">
+  <div class="panel">
+    <h2>Pengaturan</h2>
+    <label class="switch"><input type="checkbox" id="set-music" checked> <span>🎵 Musik</span></label>
+    <label class="switch"><input type="checkbox" id="set-sfx" checked> <span>🔔 Suara</span></label>
+    <label class="switch"><input type="checkbox" id="set-voice" checked> <span>🗣️ Suara guru</span></label>
+    <label class="switch"><input type="checkbox" id="set-full"> <span>⛶ Layar penuh</span></label>
+    <div class="panel-btns">
+      <button class="btn" id="set-reset">🧹 Hapus Bintang</button>
+      <button class="btn primary" id="set-close">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js?v=__BUILD__"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "Belajar Menulis - Petualangan Dino",
+  "short_name": "Belajar Menulis",
+  "description": "Belajar menulis huruf dan angka sambil bermain bersama dinosaurus.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#59c8f5",
+  "theme_color": "#59c8f5",
+  "lang": "id",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,46 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Every asset URL carries the commit sha. GitHub Pages caches each file
+      # for ten minutes independently, so without this a reload can pair new
+      # HTML with a stale module and break the app in a way that looks random.
+      - name: Stamp build id into asset URLs
+        run: |
+          BUILD="${GITHUB_SHA::7}"
+          sed -i "s/__BUILD__/${BUILD}/g" index.html sw.js js/*.js
+          printf '{"build":"%s","at":"%s"}\n' "$BUILD" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > version.json
+          echo "stamped ${BUILD}"
+          grep -c "?v=${BUILD}" index.html js/main.js
+
+      - name: Check every module still parses
+        run: |
+          for f in js/*.js sw.js; do node --check "$f" || exit 1; done
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
