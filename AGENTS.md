@@ -41,6 +41,7 @@ Static site, **no build step**. Serve the folder and it runs.
 index.html            all four screens + the settings sheet
 css/style.css         layout, colours, portrait/landscape breakpoints
 js/glyphs.js          stroke data for all 62 glyphs, plus the sampler
+js/lines.js           every spoken line, and the recording-filename rule
 js/trace.js           TracePad: guide, demo, touch capture, scoring  (start here)
 js/dino.js            every drawing: rex poses, other dinosaurs, backdrop
 js/mascot.js          the small reacting rex, on its own canvas
@@ -116,6 +117,15 @@ part the child has to catch. Every part also gets a small random wobble in rate
 and pitch, and the wording rotates through a handful of variants
 (`audio.pickLine` never returns the same one twice running). A fixed sentence
 repeated letter after letter is what makes an app grating to sit next to.
+
+Lines live in `js/lines.js`, apart from the code that speaks them, so
+`tools/voice-phrases.mjs` can enumerate every phrase the app can utter. That
+list is what a **recorded voice pack** needs: drop `voice/<slug>.m4a` files in,
+run `tools/voice-manifest.sh`, and `speakParts` plays the recording instead of
+synthesising - per phrase, so a half-finished pack is fine and anything missing
+still goes through the device voice. The slug is derived from the phrase itself
+(`clipName`), which is why the letter name is its own part with no punctuation:
+one recording of "huruf be besar" serves every sentence that mentions it.
 
 Two traps: the music is ducked under the voice and only un-ducked on `onend`,
 so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice

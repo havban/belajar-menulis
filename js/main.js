@@ -137,6 +137,9 @@ document.addEventListener('visibilitychange', () => {
 document.addEventListener('gesturestart', (e) => e.preventDefault());
 document.addEventListener('dblclick', (e) => e.preventDefault());
 
+// A recorded voice pack replaces the device's text-to-speech where it exists.
+audio.loadVoicePack().then((n) => { if (n) console.info(`[suara] ${n} rekaman dimuat`); });
+
 // Offline support; harmless if the browser or the page's origin refuses it.
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

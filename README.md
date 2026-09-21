@@ -84,9 +84,14 @@ bisa menambah.
   lewat tombol ⚙️. Suara guru memakai pembaca teks bawaan perangkat; kalau
   perangkat tidak punya suara bahasa Indonesia, bagian ini diam saja dan
   aplikasi tetap berjalan normal. Kalimat ajakannya bergantian ("Ayo, kita
-  tulis…", "Sekarang giliran…", "Yuk! Kita tulis…") dan nama hurufnya diucapkan
+  tulis…", "Sekarang giliran…", "Yuk! Kita tulis…", dan setelah satu huruf
+  selesai: "Hebat! Sekarang…", "Lanjut, tulis…") dan nama hurufnya diucapkan
   lebih pelan setelah jeda singkat, supaya tidak terdengar seperti robot yang
   mengulang kalimat sama 26 kali.
+* **Ingin memakai suara sendiri?** Aplikasi bisa memutar **rekaman** sebagai
+  pengganti suara bawaan perangkat — suara ayah, ibu, atau guru sekalipun.
+  Caranya ada di [`voice/README.md`](voice/README.md); kalimat yang belum
+  direkam tetap dibacakan perangkat, jadi rekaman boleh dicicil.
 * **Layar penuh.** Di ⚙️ ada pilihan layar penuh supaya jari kecil tidak
   tidak sengaja menekan tombol-tombol peramban.
 * **Pasang di layar depan.** Di Chrome atau Safari, pilih "Tambahkan ke layar
@@ -126,7 +131,9 @@ js/game.js          layar permainan
 js/audio.js         musik dan efek suara (dibangkitkan, bukan berkas audio)
 js/fx.js            konfeti, bintang, kata pujian
 js/progress.js      penyimpanan bintang & skor di perangkat
+js/lines.js         semua kalimat yang diucapkan, beserta variasinya
 js/main.js          latar belakang, perpindahan layar, pengaturan
+voice/              rekaman suara opsional (lihat voice/README.md)
 sw.js               agar bisa dipakai tanpa internet
 ```
 

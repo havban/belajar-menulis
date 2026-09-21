@@ -6,38 +6,12 @@ import { Mascot } from './mascot.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
+import * as lines from './lines.js?v=__BUILD__';
 
 const PRAISE = ['Hebat!', 'Keren!', 'Pintar!', 'Bagus sekali!', 'Mantap!', 'Wow!'];
 const CHEER_LINE = ['Hebat sekali!', 'Keren, kamu pintar!', 'Bagus! Lanjut ya!', 'Wah, rapi sekali!'];
 
-// Spoken lines. Each is a list of parts so the voice breathes between the
-// invitation and the letter itself, and says the letter slower - that is the
-// bit the child has to catch. They rotate, because the same sentence repeated
-// letter after letter is what makes the app sound like a machine.
-const ASK = [
-  (n) => ['Ayo, kita tulis', { text: `${n}.`, rate: 0.85, pitch: 1.18 }],
-  (n) => ['Sekarang,', { text: `${n}.`, rate: 0.85, pitch: 1.2 }, { text: 'Ayo tulis!', pitch: 1.2 }],
-  (n) => ['Coba tulis', { text: `${n}, ya.`, rate: 0.86 }],
-  (n) => [{ text: 'Yuk!', pitch: 1.26 }, 'Kita tulis', { text: `${n}.`, rate: 0.85, pitch: 1.16 }],
-  (n) => ['Ini', { text: `${n}.`, rate: 0.84, pitch: 1.18 }, 'Ayo kita tulis sama-sama.'],
-  (n) => ['Sekarang giliran', { text: `${n}.`, rate: 0.85, pitch: 1.18 }],
-];
-const HEAR = [
-  (n, w, sn) => [{ text: `${n}.`, rate: 0.8, pitch: 1.16 }, { text: `${sn} untuk ${w}.`, rate: 0.9 }],
-  (n, w, sn) => [{ text: `Ini ${n}.`, rate: 0.84 }, { text: `${sn}, seperti ${w}.`, rate: 0.9 }],
-  (n, w, sn) => [{ text: `${n}.`, rate: 0.8 }, { text: `${w}, diawali ${sn}.`, rate: 0.9 }],
-];
-const MORE = [
-  (k) => [{ text: 'Bagus!', pitch: 1.26 }, k === 1 ? 'Sekali lagi ya.' : `${k} kali lagi.`],
-  (k) => [{ text: 'Mantap!', pitch: 1.24 }, k === 1 ? 'Tinggal satu lagi.' : `Tinggal ${k} lagi.`],
-  (k) => [{ text: 'Rapi sekali.', rate: 0.92 }, k === 1 ? 'Ayo, satu lagi!' : `Ayo, ${k} kali lagi!`],
-];
-const DONE = [
-  (n, t) => [{ text: 'Hebat!', pitch: 1.3 }, { text: `Kamu berhasil menulis ${n}${t}.`, rate: 0.92 }],
-  (n, t) => [{ text: 'Wah, pintar!', pitch: 1.28 }, { text: `${n} sudah selesai${t}.`, rate: 0.92 }],
-  (n, t) => [{ text: 'Keren sekali!', pitch: 1.25 }, { text: `Tulisan ${n} kamu bagus${t}.`, rate: 0.92 }],
-];
-const said = { ask: -1, hear: -1, more: -1, done: -1 };
+const said = { ask: -1, next: -1, hear: -1, more: -1, done: -1 };
 const $ = (id) => document.getElementById(id);
 
 export function createTutor() {
@@ -81,7 +55,7 @@ export function createTutor() {
       mascot.react('cheer', 1.2);
       const left = total - doneCells;
       say(`Bagus! ${left} kali lagi ya.`, 'good');
-      audio.speakParts(audio.pickLine(MORE, said, 'more')(left));
+      audio.speakParts(audio.pickLine(lines.MORE, said, 'more')(left));
     },
     onComplete: ({ stars }) => celebrate(stars),
   });
@@ -102,7 +76,7 @@ export function createTutor() {
     mascot.react('cheer', 3);
     const times = repeat > 1 ? ` Kamu menulis ${repeat} kali!` : '';
     say(`${'⭐'.repeat(stars)} ${CHEER_LINE[(Math.random() * CHEER_LINE.length) | 0]}${times}`, 'good');
-    audio.speakParts(audio.pickLine(DONE, said, 'done')(spokenName(ch), repeat > 1 ? `, ${repeat} kali` : ''));
+    audio.speakParts(audio.pickLine(lines.DONE, said, 'done')(spokenName(ch), lines.TIMES(repeat)).filter((p) => p && p.text !== ''));
     if (fresh) refreshStars();
     $('t-next').classList.add('pulse');
     setTimeout(() => { celebrating = false; }, 900);
@@ -129,7 +103,7 @@ export function createTutor() {
     refreshStars();
   }
 
-  function select(c, { demo = null } = {}) {
+  function select(c, { demo = null, after = false } = {}) {
     ch = c;
     lastOf[set] = c;
     fails = 0;
@@ -146,7 +120,9 @@ export function createTutor() {
     for (const el of strip.children) el.classList.toggle('on', el.dataset.ch === c);
     const on = strip.querySelector('.letter.on');
     if (on) on.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-    audio.speakParts(audio.pickLine(ASK, said, 'ask')(spokenName(c)));
+    // after finishing a letter the app should sound like it noticed
+    const table = after ? lines.ASK_NEXT : lines.ASK;
+    audio.speakParts(audio.pickLine(table, said, after ? 'next' : 'ask')(spokenName(c)));
     const wantDemo = demo === null ? progress.stars(c) < 2 : demo;
     if (wantDemo) {
       setTimeout(() => {
@@ -159,7 +135,8 @@ export function createTutor() {
   function nextChar() {
     const list = SETS[set].chars;
     const i = list.indexOf(ch);
-    if (i + 1 < list.length) return select(list[i + 1]);
+    const done = pad.finished;          // "Hebat! Sekarang ..." only if it was
+    if (i + 1 < list.length) return select(list[i + 1], { after: done });
     // end of a set: roll on to the next one
     const order = ['kapital', 'kecil', 'angka'];
     const ni = (order.indexOf(set) + 1) % order.length;
@@ -194,7 +171,7 @@ export function createTutor() {
   $('t-clear').addEventListener('click', () => { audio.sfx('tap'); pad.reset(); celebrating = false; say('Ayo tulis lagi dari awal!'); });
   $('t-say').addEventListener('click', () => {
     audio.sfx('tap');
-    audio.speakParts(audio.pickLine(HEAR, said, 'hear')(spokenName(ch), wordOf(ch).word, shortName(ch)));
+    audio.speakParts(audio.pickLine(lines.HEAR, said, 'hear')(spokenName(ch), wordOf(ch).word, shortName(ch)));
   });
   $('t-next').addEventListener('click', () => { audio.sfx('tap'); nextChar(); });
 

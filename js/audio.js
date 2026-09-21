@@ -1,3 +1,5 @@
+import { clipName } from './lines.js?v=__BUILD__';
+
 // All sound is synthesised in the browser - there is not a single audio file in
 // the repo. A cheerful four-bar loop plays under the app, short effects mark
 // every success and mistake, and the letter names are spoken by the device's
@@ -170,6 +172,47 @@ export function sfx(name) {
 let idVoice = null, voicesTried = false;
 let speechToken = 0, watchdog = 0;
 
+// ------------------------------------------------- recorded voice (optional)
+// If `voice/clips.json` lists a recording for a phrase, that recording is
+// played instead of asking the device to synthesise it - a real human voice,
+// identical on every phone, and no dependency on whether the tablet happens to
+// have an Indonesian voice installed. Anything not recorded still falls back to
+// the device voice, so a half-finished pack works fine.
+const clipCache = new Map();
+let clipExt = 'm4a';
+let clipHave = new Set();
+let playing = null;
+
+export async function loadVoicePack() {
+  try {
+    const res = await fetch('voice/clips.json', { cache: 'no-cache' });
+    if (!res.ok) return 0;
+    const j = await res.json();
+    clipExt = j.ext || 'm4a';
+    clipHave = new Set(j.have || []);
+    return clipHave.size;
+  } catch (e) { return 0; }        // no pack: the device voice is used
+}
+
+export const voicePackSize = () => clipHave.size;
+
+async function clipFor(text) {
+  if (!ctx || !clipHave.size) return null;
+  const name = clipName(text);
+  if (!clipHave.has(name)) return null;
+  if (clipCache.has(name)) return clipCache.get(name);
+  try {
+    const res = await fetch(`voice/${name}.${clipExt}`);
+    if (!res.ok) throw new Error('404');
+    const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+    clipCache.set(name, buf);
+    return buf;
+  } catch (e) {
+    clipHave.delete(name);         // broken file: stop trying, speak it instead
+    return null;
+  }
+}
+
 function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
   const vs = speechSynthesis.getVoices();
@@ -204,7 +247,8 @@ function duck(on) {
 // random wobble in speed and pitch, because a synthetic voice repeating the
 // identical line 26 times in a row is what makes an app grating to sit with.
 export function speakParts(parts, { gap = 130 } = {}) {
-  if (!settings.voice || !('speechSynthesis' in window) || !parts.length) return;
+  if (!settings.voice || !parts.length) return;
+  if (!('speechSynthesis' in window) && !clipHave.size) return;
   if (!voicesTried) pickVoice();
   const list = parts.map((p) => (typeof p === 'string' ? { text: p } : p));
   const token = ++speechToken;
@@ -222,14 +266,28 @@ export function speakParts(parts, { gap = 130 } = {}) {
       if (token !== speechToken) return;            // a newer line took over
       if (i >= list.length) { clearTimeout(watchdog); duck(false); return; }
       const p = list[i++];
-      const u = new SpeechSynthesisUtterance(p.text);
-      u.lang = 'id-ID';
-      if (idVoice) u.voice = idVoice;
-      u.rate = (p.rate ?? 0.95) + (Math.random() - 0.5) * 0.10;
-      u.pitch = (p.pitch ?? 1.12) + (Math.random() - 0.5) * 0.16;
-      u.onend = () => { if (token === speechToken) setTimeout(next, p.gap ?? gap); };
-      u.onerror = () => { if (token === speechToken) { clearTimeout(watchdog); duck(false); } };
-      speechSynthesis.speak(u);
+      clipFor(p.text).then((buf) => {
+        if (token !== speechToken) return;
+        if (buf) {                                  // recorded: just play it
+          clearTimeout(watchdog);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(master);
+          src.onended = () => { if (token === speechToken) setTimeout(next, p.gap ?? gap); };
+          playing = src;
+          src.start();
+          watchdog = setTimeout(() => { if (token === speechToken) duck(false); }, buf.duration * 1000 + 2500);
+          return;
+        }
+        const u = new SpeechSynthesisUtterance(p.text);
+        u.lang = 'id-ID';
+        if (idVoice) u.voice = idVoice;
+        u.rate = (p.rate ?? 0.95) + (Math.random() - 0.5) * 0.10;
+        u.pitch = (p.pitch ?? 1.12) + (Math.random() - 0.5) * 0.16;
+        u.onend = () => { if (token === speechToken) setTimeout(next, p.gap ?? gap); };
+        u.onerror = () => { if (token === speechToken) { clearTimeout(watchdog); duck(false); } };
+        speechSynthesis.speak(u);
+      });
     };
     next();
   } catch (e) { clearTimeout(watchdog); duck(false); /* a missing voice must never break the lesson */ }
@@ -252,5 +310,6 @@ export function shutUp() {
   speechToken++;
   clearTimeout(watchdog);
   duck(false);
+  if (playing) { try { playing.stop(); } catch (e) { /* already finished */ } playing = null; }
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
