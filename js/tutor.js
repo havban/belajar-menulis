@@ -19,11 +19,15 @@ export function createTutor() {
   let ch = null;
   let fails = 0;
   let celebrating = false;
+  // how many times the letter is written on one page - repetition is what
+  // actually smooths a child's handwriting, so the choice is remembered
+  let repeat = Math.max(1, Math.min(4, progress.prefs().repeat || 1));
   const lastOf = { kapital: 'A', kecil: 'a', angka: '0' };
 
   const pad = new TracePad($('t-pad'), {
     guide: 'full',
     tol: 13,
+    repeat,
     onStroke: (res, i) => {
       if (res.pass) {
         fails = 0;
@@ -39,6 +43,16 @@ export function createTutor() {
         mascot.react('sad', 1.2);
         if (fails >= 2) { fails = 0; setTimeout(() => pad.playDemo(pad.index), 350); }
       }
+    },
+    onCell: (doneCells, total, self) => {
+      // one copy finished, more to go: a small reward keeps the page moving
+      audio.sfx('star');
+      const [cx, cy] = self.cellCentre(doneCells - 1);
+      fx.burstStars(cx, cy, 2);
+      mascot.react('cheer', 1.2);
+      const left = total - doneCells;
+      say(`Bagus! ${left} kali lagi ya.`, 'good');
+      audio.speak(left === 1 ? 'Bagus! Sekali lagi ya.' : `Bagus! ${left} kali lagi.`);
     },
     onComplete: ({ stars }) => celebrate(stars),
   });
@@ -57,8 +71,9 @@ export function createTutor() {
     fx.praise(PRAISE[(Math.random() * PRAISE.length) | 0]);
     fx.burstStars(innerWidth / 2, innerHeight * 0.55, stars);
     mascot.react('cheer', 3);
-    say(`${'⭐'.repeat(stars)} ${CHEER_LINE[(Math.random() * CHEER_LINE.length) | 0]}`, 'good');
-    audio.speak(`${PRAISE[(Math.random() * PRAISE.length) | 0]} Kamu berhasil menulis ${spokenName(ch)}`);
+    const times = repeat > 1 ? ` Kamu menulis ${repeat} kali!` : '';
+    say(`${'⭐'.repeat(stars)} ${CHEER_LINE[(Math.random() * CHEER_LINE.length) | 0]}${times}`, 'good');
+    audio.speak(`${PRAISE[(Math.random() * PRAISE.length) | 0]} Kamu berhasil menulis ${spokenName(ch)}${repeat > 1 ? `, ${repeat} kali` : ''}`);
     if (fresh) refreshStars();
     $('t-next').classList.add('pulse');
     setTimeout(() => { celebrating = false; }, 900);
@@ -90,13 +105,14 @@ export function createTutor() {
     lastOf[set] = c;
     fails = 0;
     celebrating = false;
-    pad.setGlyph(c, { guide: 'full' });
+    pad.setGlyph(c, { guide: 'full', repeat });
     big.textContent = c;
     const w = wordOf(c);
     emoji.textContent = w.emoji;
     word.textContent = w.word;
     const n = glyph(c).strokes.length;
-    say(n > 1 ? `Ada ${n} garis. Mulai dari titik hijau!` : 'Mulai dari titik hijau, ikuti panahnya!');
+    const base = n > 1 ? `Ada ${n} garis. Mulai dari titik hijau!` : 'Mulai dari titik hijau, ikuti panahnya!';
+    say(repeat > 1 ? `${base} Tulis ${repeat} kali ya.` : base);
     $('t-next').classList.remove('pulse');
     for (const el of strip.children) el.classList.toggle('on', el.dataset.ch === c);
     const on = strip.querySelector('.letter.on');
@@ -131,6 +147,20 @@ export function createTutor() {
   for (const t of tabs.children) {
     t.addEventListener('click', () => { audio.sfx('tap'); switchSet(t.dataset.set); });
   }
+  for (const b of $('t-reps').querySelectorAll('.rep')) {
+    b.addEventListener('click', () => {
+      audio.sfx('tap');
+      setRepeat(+b.dataset.n);
+      if (ch) select(ch, { demo: false });     // re-lay the page with the new count
+    });
+  }
+
+  function setRepeat(n) {
+    repeat = Math.max(1, Math.min(4, n));
+    progress.setPref('repeat', repeat);
+    for (const b of $('t-reps').querySelectorAll('.rep')) b.classList.toggle('on', +b.dataset.n === repeat);
+  }
+
   $('t-demo').addEventListener('click', () => { audio.sfx('tap'); pad.playDemo(pad.finished ? 0 : pad.index); });
   $('t-clear').addEventListener('click', () => { audio.sfx('tap'); pad.reset(); celebrating = false; say('Ayo tulis lagi dari awal!'); });
   $('t-say').addEventListener('click', () => { audio.sfx('tap'); audio.speak(`${spokenName(ch)}. ${shortName(ch)} untuk ${wordOf(ch).word}`); });
@@ -142,6 +172,7 @@ export function createTutor() {
     select,
     open() {
       mascot.start();
+      setRepeat(repeat);
       buildStrip();
       switchSet(set, lastOf[set]);
     },

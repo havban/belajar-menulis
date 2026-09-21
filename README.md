@@ -30,6 +30,13 @@ dibuka, aplikasi ini juga bisa dipakai **tanpa internet**.
   **B untuk Bola**, **D untuk Dinosaurus**, dan seterusnya.
 * Tombol **🔊 Dengar** membacakan nama huruf dan contoh katanya dalam bahasa
   Indonesia (memakai suara bawaan perangkat).
+* **Latihan 1× sampai 4×.** Pilihan **Latihan** di kartu huruf menentukan
+  berapa kali huruf yang sama ditulis dalam satu halaman — persis seperti buku
+  halus. Kotak yang sedang dikerjakan diberi garis biru, kotak yang sudah
+  selesai diberi tanda ✅, dan kotak berikutnya menunggu dengan huruf samar.
+  Setiap kotak yang selesai mendapat bintang kecil dan pujian, dan pilihan ini
+  diingat untuk huruf-huruf berikutnya. Mengulang tulisan beberapa kali inilah
+  yang paling cepat melancarkan tangan anak.
 
 ### 2. Main Game — Petualangan Dino
 
@@ -69,6 +76,10 @@ bisa menambah.
   tidaknya.
 * **Kalau anak salah dua kali berturut-turut**, contoh cara menulis akan
   diperagakan ulang secara otomatis.
+* **Berapa kali sebaiknya?** Untuk huruf yang baru dikenal, mulai dari 1×
+  supaya kotaknya besar dan mudah diikuti. Kalau anak sudah bisa, naikkan ke
+  3× atau 4× untuk melancarkan. Di layar kecil, 4 kotak otomatis disusun 2×2
+  agar tetap cukup besar untuk jari.
 * **Suara.** Musik, efek suara, dan suara guru bisa dimatikan sendiri-sendiri
   lewat tombol ⚙️. Suara guru memakai pembaca teks bawaan perangkat; kalau
   perangkat tidak punya suara bahasa Indonesia, bagian ini diam saja dan

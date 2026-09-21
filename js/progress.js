@@ -4,7 +4,7 @@
 
 const KEY = 'belajar-menulis:v1';
 
-const blank = () => ({ stars: {}, best: 0, played: 0, settings: { music: true, sfx: true, voice: true } });
+const blank = () => ({ stars: {}, best: 0, played: 0, settings: { music: true, sfx: true, voice: true, repeat: 1 } });
 
 let data = blank();
 try {

@@ -191,6 +191,26 @@ html, body {
 .word { font-size: clamp(14px, 3.4vmin, 22px); font-weight: 800; display: flex; align-items: center; gap: 6px; }
 .word .emoji { font-size: clamp(22px, 5vmin, 34px); }
 .info .mascot { width: 92px; height: 74px; margin-left: auto; flex: 0 0 auto; }
+
+/* How many times the letter is written on one page - the repetition that
+   actually builds a steady hand. */
+.reps { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.reps-label {
+  font-size: clamp(11px, 2.4vmin, 14px);
+  font-weight: 800; color: #6a7a8a;
+  margin-right: 2px;
+}
+.rep {
+  font-family: inherit; font-weight: 800; border: none; cursor: pointer;
+  min-width: 40px; height: 40px;
+  border-radius: 12px;
+  font-size: clamp(13px, 2.8vmin, 16px);
+  background: rgba(120, 150, 190, 0.16);
+  color: var(--ink);
+  transition: transform .1s ease, background .2s;
+}
+.rep.on { background: var(--blue); color: #fff; }
+.rep:active { transform: translateY(3px); }
 .tip {
   margin: 0; flex: 1 1 100%;
   font-size: clamp(12px, 2.8vmin, 17px);
@@ -292,13 +312,21 @@ html, body {
     justify-content: flex-start;
     gap: 4px;
   }
-  .info .mascot { width: 100%; height: auto; aspect-ratio: 5 / 4; margin: auto auto 0; }
+  .info .mascot { width: 100%; height: auto; aspect-ratio: 5 / 4; max-height: 45%; margin: auto auto 0; }
+  .reps { margin-top: 4px; }
+  /* in a column the tip has no row to fill, so give it the card's width or a
+     long sentence runs straight out of the card */
+  .info .tip { width: 100%; flex: 0 0 auto; }
   .big-letter { font-size: clamp(48px, 11vmin, 96px); }
   .play { flex-direction: row; }
   .arena { flex: 0 0 42%; }
   .play .pad-wrap { flex: 1 1 auto; }
 }
 @media (orientation: landscape) and (max-height: 460px) {
+  /* a short landscape phone has no room for the mascot beside the letter, and
+     the tip matters more: it is where the teaching feedback appears */
+  .info .mascot { display: none; }
+  .info .tip { width: 100%; }
   .strip { padding-bottom: 4px; }
   .letter { min-width: 46px; height: 46px; font-size: 20px; }
   .btn { min-height: 46px; padding: 8px 12px; }

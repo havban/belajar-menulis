@@ -67,6 +67,27 @@ the bottom left; the fix was `430`, the same end point taken over the top.
 **After editing any glyph, look at it** — render the grid (see Testing) rather
 than trusting the numbers.
 
+## The practice boxes
+
+The pad can hold 1–4 copies of the same letter on one page (the **Latihan**
+control on the lesson screen), because repetition is what actually smooths a
+child's handwriting. `layoutCells()` picks the arrangement that makes the boxes
+biggest for the pad's shape, with a small bonus for grids that have no empty
+slot, and centres the whole block rather than each box in its own slice.
+
+Everything below the layout still draws in glyph units: `_use(cell)` points
+`ox`/`oy`/`s` at one box, so every painter stays box-agnostic. Two bits of
+state track where the child is: `index` is the stroke within the current box
+and `cell` is which box; `finished` means `cell >= repeat`.
+
+**The invariant to respect:** `index` is reset to 0 and `cell` incremented the
+moment a box is finished, so `index` is only ever a valid stroke slot. The
+painters guard against an empty slot anyway — the assumption is easy to break
+from the outside and the old code crashed once per frame when it was.
+
+The game always uses one box; only the lesson exposes the choice, and it is
+remembered in `localStorage` through `progress.setPref('repeat', n)`.
+
 ## Scoring (`scoreStroke` in `js/trace.js`)
 
 The child's stroke and the model stroke are each resampled to 34 points evenly
@@ -117,9 +138,12 @@ node your-script.js                # chromium, goto http://localhost:8791
 
 `window.__app` exposes everything worth asserting: `screen`, `progress`,
 `audio`, `tutor` (`.pad`, `.select(ch, {demo:false})`) and `game`
-(`.pad`, `.state`). To fake a child writing, read `pad.strokes[i].pts` and map
-glyph units to page pixels with `pad.ox`, `pad.oy`, `pad.s` plus the canvas
-bounding rect, then dispatch mouse/touch events along the path.
+(`.pad`, `.state`). To fake a child writing, read `pad.strokes[pad.index].pts`
+and map glyph units to page pixels with the active box (`pad.box.ox`,
+`pad.box.oy`, `pad.box.s`) plus the canvas bounding rect, then dispatch
+mouse/touch events along the path. **Re-read the box before every stroke**: with
+repetition on, the coordinate frame moves to the next box as the child works
+across the page.
 
 To check letterforms, draw every glyph into a grid canvas and screenshot it —
 that is how the `3`, `5`, `8`, `S`, `s`, `f` and `k` shapes were corrected.

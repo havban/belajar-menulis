@@ -132,15 +132,56 @@ const REASON_TEXT = {
 };
 export const reasonText = (r) => REASON_TEXT[r] || 'Ayo coba sekali lagi!';
 
+// Splits the pad into `n` practice boxes and picks the arrangement that makes
+// each box as big as possible for the pad's shape: four boxes end up in a row
+// on a wide pad and in a square on a tall one.
+function layoutCells(w, h, n) {
+  let best = null;
+  for (let cols = 1; cols <= n; cols++) {
+    const rows = Math.ceil(n / cols);
+    const gapF = 0.12;                                  // gap as a share of a box
+    const side = Math.min(
+      w / (cols + (cols - 1) * gapF),
+      h / (rows + (rows - 1) * gapF),
+    ) * (n === 1 ? 0.9 : 0.88);
+    // A grid with no empty slot reads like a worksheet line, so it wins unless
+    // a ragged one would make the boxes meaningfully bigger.
+    const score = side * (cols * rows === n ? 1.06 : 1);
+    if (!best || score >= best.score) best = { cols, rows, side, score };
+  }
+  const { cols, rows, side } = best;
+  const gap = side * 0.12;
+  const step = side + gap;
+  // Centre the whole block rather than each box in its own slice of the pad,
+  // so four boxes sit together as one page of practice instead of drifting
+  // into the corners.
+  const top = (h - (rows * side + (rows - 1) * gap)) / 2;
+  const cells = [];
+  for (let i = 0; i < n; i++) {
+    const row = Math.floor(i / cols);
+    const inRow = Math.min(cols, n - row * cols);
+    const left = (w - (inRow * side + (inRow - 1) * gap)) / 2;
+    cells.push({
+      ox: left + (i - row * cols) * step,
+      oy: top + row * step,
+      s: side / 100,
+    });
+  }
+  return cells;
+}
+
 export class TracePad {
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.opts = Object.assign({ guide: 'full', tol: 12, lines: true, onStroke: null, onComplete: null, onDraw: null }, opts);
+    this.opts = Object.assign({ guide: 'full', tol: 12, lines: true, repeat: 1, onStroke: null, onComplete: null, onCell: null, onDraw: null }, opts);
     this.ch = null;
     this.strokes = [];
     this.done = [];          // the child's accepted ink, one entry per stroke
-    this.index = 0;
+    this.index = 0;          // stroke within the current practice box
+    this.cell = 0;           // which practice box is being written in
+    this.repeat = 1;
+    this.cells = [{ ox: 0, oy: 0, s: 1 }];
     this.live = null;
     this.sparks = [];
     this.demoT = -1;
@@ -181,18 +222,22 @@ export class TracePad {
     Object.assign(this.opts, opts);
     this.ch = ch;
     this.strokes = glyph(ch).strokes;
+    this.repeat = Math.max(1, Math.min(4, Math.round(this.opts.repeat || 1)));
     this.done = [];
     this.scores = [];
     this.index = 0;
+    this.cell = 0;
     this.live = null;
     this.sparks = [];
     this.demoT = -1;
     this.shake = 0;
+    this._layout();
   }
 
   reset() { if (this.ch) this.setGlyph(this.ch); }
 
-  get finished() { return this.index >= this.strokes.length; }
+  // Done means every practice box on the page has been written.
+  get finished() { return this.cell >= this.repeat; }
 
   // Average of the stroke scores, turned into 1..3 stars.
   get stars() {
@@ -221,18 +266,30 @@ export class TracePad {
     this.canvas.width = Math.round(r.width * dpr);
     this.canvas.height = Math.round(r.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const side = Math.min(r.width, r.height) * 0.9;
-    this.s = side / 100;
-    this.ox = (r.width - side) / 2;
-    this.oy = (r.height - side) / 2;
+    this.cells = layoutCells(r.width, r.height, this.repeat || 1);
+    this._use(this.box);
   }
+
+  // Everything drawn is in glyph units; `_use` points those units at one
+  // practice box, so all the painting below stays box-agnostic.
+  _use(cell) { this.ox = cell.ox; this.oy = cell.oy; this.s = cell.s; }
+
+  get box() { return this.cells[Math.min(this.cell, this.cells.length - 1)]; }
 
   X(v) { return this.ox + v * this.s; }
   Y(v) { return this.oy + v * this.s; }
 
+  // Where the middle of a box sits on the page - for confetti and stars.
+  cellCentre(i = this.cell) {
+    const r = this.canvas.getBoundingClientRect();
+    const cell = this.cells[Math.min(i, this.cells.length - 1)];
+    return [r.left + cell.ox + cell.s * 50, r.top + cell.oy + cell.s * 50];
+  }
+
   _pt(e) {
     const r = this.canvas.getBoundingClientRect();
-    return [(e.clientX - r.left - this.ox) / this.s, (e.clientY - r.top - this.oy) / this.s];
+    const cell = this.box;
+    return [(e.clientX - r.left - cell.ox) / cell.s, (e.clientY - r.top - cell.oy) / cell.s];
   }
 
   _down(e) {
@@ -255,7 +312,7 @@ export class TracePad {
     if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 0.6) return;
     this.live.push(p);
     if (this.sparks.length < 90 && Math.random() < 0.6) {
-      this.sparks.push({ x: p[0], y: p[1], vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12 - 6, life: 1, hue: (performance.now() / 8) % 360 });
+      this.sparks.push({ x: p[0], y: p[1], cell: this.cell, vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12 - 6, life: 1, hue: (performance.now() / 8) % 360 });
     }
     if (this.opts.onDraw) this.opts.onDraw(p);
   }
@@ -265,26 +322,36 @@ export class TracePad {
     e.preventDefault();
     const user = this.live;
     this.live = null;
-    const target = this.strokes[this.index];
+    const at = this.index;
+    const target = this.strokes[at];
     const res = scoreStroke(target, user, this.opts.tol);
+    let cellDone = false;
     if (res.pass) {
-      this.done.push({ pts: user, i: this.index });
+      this.done.push({ pts: user, i: at, cell: this.cell });
       this.scores.push(res.score);
       this.index++;
       this._burst(user[user.length - 1]);
+      if (this.index >= this.strokes.length) {   // this copy of the letter is done
+        cellDone = true;
+        this.index = 0;
+        this.cell++;
+      }
     } else {
       this.shake = 1;
     }
-    if (this.opts.onStroke) this.opts.onStroke(res, this.index - (res.pass ? 1 : 0), this);
-    if (res.pass && this.finished && this.opts.onComplete) {
-      this.opts.onComplete({ stars: this.stars, scores: this.scores, ch: this.ch });
+    if (this.opts.onStroke) this.opts.onStroke(res, at, this);
+    if (cellDone && !this.finished && this.opts.onCell) {
+      this.opts.onCell(this.cell, this.repeat, this);
+    }
+    if (this.finished && this.opts.onComplete) {
+      this.opts.onComplete({ stars: this.stars, scores: this.scores, ch: this.ch, repeat: this.repeat });
     }
   }
 
   _burst(p) {
     for (let i = 0; i < 16; i++) {
       const a = Math.random() * Math.PI * 2, sp = 10 + Math.random() * 30;
-      this.sparks.push({ x: p[0], y: p[1], vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, hue: Math.random() * 360 });
+      this.sparks.push({ x: p[0], y: p[1], cell: this.cell, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, hue: Math.random() * 360 });
     }
   }
 
@@ -301,6 +368,7 @@ export class TracePad {
     if (this.demoT >= 0) {
       this.demoT += dt;
       const st = this.strokes[this.demoStroke];
+      if (!st) { this.stopDemo(); this._paint(now / 1000); return; }
       const dur = st.dot ? 0.5 : Math.max(0.7, st.len / 62);
       if (this.demoT > dur + 0.45) {
         this.demoT = 0;
@@ -313,56 +381,53 @@ export class TracePad {
 
   _paint(time) {
     const c = this.ctx, { w, h } = this;
+    const gu = this.opts.guide;
     c.save();
     if (this.shake > 0) c.translate(Math.sin(time * 60) * this.shake * 6, 0);
     c.clearRect(-20, -20, w + 40, h + 40);
 
-    if (this.opts.lines) this._paintPaper();
+    for (let ci = 0; ci < this.cells.length; ci++) {
+      this._use(this.cells[ci]);
+      const active = ci === this.cell;
+      const done = ci < this.cell;
+      if (this.repeat > 1) this._paintBox(active, done);
+      if (this.opts.lines) this._paintPaper();
 
-    const gu = this.opts.guide;
-    if (gu !== 'none') {
-      // Strokes not reached yet sit quietly in the background.
+      // A finished box keeps only the child's own writing; the boxes still to
+      // come show the letter waiting faintly, like a worksheet.
+      if (gu !== 'none' && !done) this._paintGuide(active ? this.index : 0, active, gu);
+
       c.lineCap = 'round'; c.lineJoin = 'round';
-      for (let i = 0; i < this.strokes.length; i++) {
-        if (i < this.index) continue;
-        const st = this.strokes[i];
-        const cur = i === this.index;
-        if (gu === 'faint' && !cur) continue;
-        c.strokeStyle = cur ? 'rgba(90,90,120,0.30)' : 'rgba(120,120,150,0.14)';
-        if (gu === 'faint') c.strokeStyle = 'rgba(120,120,150,0.18)';
-        c.lineWidth = this.s * 11;
-        this._path(st);
-        if (st.dot) { c.fillStyle = c.strokeStyle; c.fill(); } else c.stroke();
+      for (const d of this.done) {
+        if ((d.cell || 0) !== ci) continue;
+        c.strokeStyle = INK[d.i % INK.length];
+        c.lineWidth = this.s * 9;
+        if (d.pts.length === 1) {
+          c.fillStyle = c.strokeStyle;
+          c.beginPath();
+          c.arc(this.X(d.pts[0][0]), this.Y(d.pts[0][1]), this.s * 4.5, 0, 7);
+          c.fill();
+        } else {
+          this._ink(d.pts);
+          c.stroke();
+        }
       }
-    }
 
-    // The child's own ink, one colour per stroke.
-    c.lineCap = 'round'; c.lineJoin = 'round';
-    for (const d of this.done) {
-      c.strokeStyle = INK[d.i % INK.length];
-      c.lineWidth = this.s * 9;
-      if (d.pts.length === 1) {
-        c.fillStyle = c.strokeStyle;
-        c.beginPath();
-        c.arc(this.X(d.pts[0][0]), this.Y(d.pts[0][1]), this.s * 4.5, 0, 7);
-        c.fill();
-      } else {
-        this._ink(d.pts);
+      if (!active) continue;
+      if (!this.finished && gu !== 'none') this._paintCurrent(time);
+      if (this.live) {
+        c.strokeStyle = INK[this.index % INK.length];
+        c.lineWidth = this.s * 9;
+        c.shadowColor = c.strokeStyle; c.shadowBlur = this.s * 3;
+        this._ink(this.live);
         c.stroke();
+        c.shadowBlur = 0;
       }
+      if (this.demoT >= 0) this._paintDemo();
     }
 
-    if (!this.finished && gu !== 'none') this._paintCurrent(time);
-    if (this.live) {
-      c.strokeStyle = INK[this.index % INK.length];
-      c.lineWidth = this.s * 9;
-      c.shadowColor = c.strokeStyle; c.shadowBlur = this.s * 3;
-      this._ink(this.live);
-      c.stroke();
-      c.shadowBlur = 0;
-    }
-    if (this.demoT >= 0) this._paintDemo();
     for (const s of this.sparks) {
+      this._use(this.cells[Math.min(s.cell || 0, this.cells.length - 1)]);
       c.globalAlpha = Math.max(0, s.life);
       c.fillStyle = `hsl(${s.hue},95%,62%)`;
       c.beginPath();
@@ -370,7 +435,59 @@ export class TracePad {
       c.fill();
     }
     c.globalAlpha = 1;
+    this._use(this.box);
     c.restore();
+  }
+
+  // One practice box: a card behind the letter, lit up while it is the one
+  // being written, and ticked off once it is done.
+  _paintBox(active, done) {
+    const c = this.ctx;
+    const x = this.X(-4), y = this.Y(-4), w = this.s * 108, r = this.s * 7;
+    c.save();
+    c.beginPath();
+    if (c.roundRect) c.roundRect(x, y, w, w, r); else c.rect(x, y, w, w);
+    c.fillStyle = active ? 'rgba(255,255,255,0.92)' : done ? 'rgba(214,246,228,0.8)' : 'rgba(255,255,255,0.55)';
+    c.fill();
+    // Each box gets an outline so it reads as its own slot on the page: solid
+    // blue for the one being written, dashed and quiet for the rest.
+    c.setLineDash(active ? [] : [this.s * 3, this.s * 3]);
+    c.strokeStyle = active ? 'rgba(77,150,255,0.75)'
+      : done ? 'rgba(46,204,113,0.4)' : 'rgba(120,150,190,0.32)';
+    c.lineWidth = this.s * (active ? 1.4 : 0.9);
+    c.stroke();
+    c.setLineDash([]);
+    if (done) {
+      c.fillStyle = '#2ecc71';
+      c.beginPath();
+      c.arc(this.X(95), this.Y(5), this.s * 6.5, 0, 7);
+      c.fill();
+      c.strokeStyle = '#fff';
+      c.lineWidth = this.s * 1.7;
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      c.beginPath();
+      c.moveTo(this.X(91.5), this.Y(5));
+      c.lineTo(this.X(94), this.Y(7.8));
+      c.lineTo(this.X(99), this.Y(1.8));
+      c.stroke();
+    }
+    c.restore();
+  }
+
+  _paintGuide(from, active, gu) {
+    const c = this.ctx;
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    for (let i = from; i < this.strokes.length; i++) {
+      const st = this.strokes[i];
+      const cur = active && i === this.index;
+      if (gu === 'faint' && !cur) continue;
+      c.strokeStyle = cur ? 'rgba(90,90,120,0.30)'
+        : active ? 'rgba(120,120,150,0.14)' : 'rgba(120,120,150,0.12)';
+      if (gu === 'faint') c.strokeStyle = 'rgba(120,120,150,0.18)';
+      c.lineWidth = this.s * 11;
+      this._path(st);
+      if (st.dot) { c.fillStyle = c.strokeStyle; c.fill(); } else c.stroke();
+    }
   }
 
   // Ink is drawn as a curve through the midpoints of the captured samples, so
@@ -418,6 +535,7 @@ export class TracePad {
   // the stroke number in it, and an arrow at the far end.
   _paintCurrent(time) {
     const c = this.ctx, st = this.strokes[this.index];
+    if (!st) return;                   // nothing left to point at in this box
     c.save();
     c.lineCap = 'round'; c.lineJoin = 'round';
     c.setLineDash([this.s * 4, this.s * 4]);
@@ -470,6 +588,7 @@ export class TracePad {
   // A glowing dot walks the stroke so the child can watch the movement first.
   _paintDemo() {
     const c = this.ctx, st = this.strokes[this.demoStroke];
+    if (!st) { this.stopDemo(); return; }
     const dur = st.dot ? 0.5 : Math.max(0.7, st.len / 62);
     const t = Math.min(1, this.demoT / dur);
     const n = st.pts.length;
