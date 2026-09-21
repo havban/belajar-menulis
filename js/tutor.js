@@ -11,7 +11,7 @@ const PRAISE = ['Hebat!', 'Keren!', 'Pintar!', 'Bagus sekali!', 'Mantap!', 'Wow!
 const CHEER_LINE = ['Hebat sekali!', 'Keren, kamu pintar!', 'Bagus! Lanjut ya!', 'Wah, rapi sekali!'];
 const $ = (id) => document.getElementById(id);
 
-export function createTutor(nav) {
+export function createTutor() {
   const strip = $('t-strip'), tabs = $('t-tabs');
   const big = $('t-big'), emoji = $('t-emoji'), word = $('t-word'), tip = $('t-tip');
   const mascot = new Mascot($('t-mascot'));

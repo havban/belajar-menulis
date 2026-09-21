@@ -13,7 +13,7 @@ import * as progress from './progress.js?v=__BUILD__';
 const $ = (id) => document.getElementById(id);
 const WIN_WORDS = ['Hebat!', 'Kena!', 'Mantap!', 'Keren!', 'Pukul!'];
 
-export function createGame(nav) {
+export function createGame() {
   const scene = $('g-scene'), sctx = scene.getContext('2d');
   const promptEl = $('g-prompt'), timerEl = $('g-timer'), heartsEl = $('g-hearts');
   let raf = 0, last = 0, W = 0, H = 0, dpr = 1;
