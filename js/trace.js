@@ -25,15 +25,6 @@ function distToPath(pts, x, y) {
   return best;
 }
 
-function nearestIndex(pts, x, y) {
-  let best = Infinity, bi = 0;
-  for (let i = 0; i < pts.length; i++) {
-    const d = Math.hypot(x - pts[i][0], y - pts[i][1]);
-    if (d < best) { best = d; bi = i; }
-  }
-  return bi;
-}
-
 // Walks a polyline and returns `n` points spread evenly along it, optionally
 // only the slice between two fractions of its length. Even spacing is what
 // makes the comparison below fair: it compares shape, not drawing speed.
@@ -166,7 +157,10 @@ export class TracePad {
     canvas.addEventListener('pointerdown', this._onDown);
     canvas.addEventListener('pointermove', this._onMove);
     canvas.addEventListener('pointerup', this._onUp);
-    canvas.addEventListener('pointercancel', this._onUp);
+    // A cancelled pointer means the system took over (a notification, an edge
+    // swipe). Throw the half-drawn stroke away rather than marking it wrong.
+    this._onCancel = (e) => { if (e.pointerId === this._pid) this.live = null; };
+    canvas.addEventListener('pointercancel', this._onCancel);
     this._ro = new ResizeObserver(() => this._layout());
     this._ro.observe(canvas);
     this._layout();
@@ -180,7 +174,7 @@ export class TracePad {
     this.canvas.removeEventListener('pointerdown', this._onDown);
     this.canvas.removeEventListener('pointermove', this._onMove);
     this.canvas.removeEventListener('pointerup', this._onUp);
-    this.canvas.removeEventListener('pointercancel', this._onUp);
+    this.canvas.removeEventListener('pointercancel', this._onCancel);
   }
 
   setGlyph(ch, opts = {}) {

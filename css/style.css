@@ -301,8 +301,10 @@ html, body {
   .btn { min-height: 46px; padding: 8px 12px; }
 }
 
-/* the "Lanjut" button waves once a letter is finished */
-.btn.pulse { animation: pulse 1s ease-in-out infinite; background: var(--yellow); }
+/* The "Lanjut" button waves a few times once a letter is finished, then
+   settles. An animation that never stops is a distraction on a screen a child
+   is supposed to be writing on. */
+.btn.pulse { animation: pulse 1s ease-in-out 6; background: var(--yellow); }
 @keyframes pulse {
   0%, 100% { transform: none; }
   50% { transform: translateY(-5px) scale(1.04); }
