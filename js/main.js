@@ -248,13 +248,9 @@ $('set-voice').checked = prefs.voice;
 
 $('btn-settings').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.remove('hidden'); });
 $('set-name').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); askName('edit'); });
+theme.onChange(() => { refreshMenu(); game.dressForTheme(); tutor.showName(); });
 for (const b of document.querySelectorAll('.theme-btn')) {
-  b.addEventListener('click', () => {
-    audio.sfx('pop');
-    theme.set(b.dataset.theme);
-    refreshMenu();
-    game.dressForTheme();
-  });
+  b.addEventListener('click', () => { audio.sfx('pop'); theme.set(b.dataset.theme); });
 }
 $('set-profiles').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); openProfiles(); });
 $('set-close').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); });
