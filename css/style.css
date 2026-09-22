@@ -242,7 +242,8 @@ html, body {
 
 .controls {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   gap: 6px; flex: 0 0 auto;
 }
 .controls .btn { padding: 10px 4px; overflow: hidden; }
@@ -490,16 +491,7 @@ html, body {
    times. The wave stops - an animation that never ends is a distraction on a
    screen a child is supposed to be writing on - but the colour stays, so the
    button still looks different from the three beside it. */
-.btn.pulse {
-  background: var(--yellow);
-  animation: pulse 1.4s ease-out 4;
-}
-/* The attention pulse is a ring of light, not a jump: a button that moves is a
-   moving target for a small finger, and this one exists to be hit. */
-@keyframes pulse {
-  0% { box-shadow: 0 6px 0 rgba(0, 0, 0, .16), 0 0 0 0 rgba(255, 193, 60, .8); }
-  70%, 100% { box-shadow: 0 6px 0 rgba(0, 0, 0, .16), 0 0 0 16px rgba(255, 193, 60, 0); }
-}
+.btn.hidden { display: none; }
 
 /* The big "what do I do now" button, next to the dino: it only exists once the
    letter or word is finished, so a small child does not have to find the right
@@ -524,7 +516,8 @@ html, body {
 .next-cta.hidden { display: none; }
 .next-cta:active { transform: translateY(4px); box-shadow: 0 2px 0 #04a97a; }
 @keyframes cta-in { from { opacity: 0; transform: scale(.7); } }
-/* Glow, do not move - see the note on .btn.pulse above. */
+/* Glow, do not move: a button that moves is a moving target for a small
+   finger, and this one exists to be hit. */
 @keyframes cta-glow {
   0% { box-shadow: 0 6px 0 #04a97a, 0 10px 22px rgba(0, 0, 0, .2), 0 0 0 0 rgba(46, 230, 168, .75); }
   70%, 100% { box-shadow: 0 6px 0 #04a97a, 0 10px 22px rgba(0, 0, 0, .2), 0 0 0 20px rgba(46, 230, 168, 0); }

@@ -101,7 +101,10 @@ export function createTutor() {
   // after the celebration - and the one in the footer changes colour to match.
   function showNext(on) {
     $('t-cta').classList.toggle('hidden', !on);
-    $('t-next').classList.toggle('pulse', on);
+    // two buttons doing the same thing at the same time is just noise, so the
+    // footer one steps aside; before the letter is finished it stays, because
+    // that is how a child skips a letter they do not want
+    $('t-next').classList.toggle('hidden', on);
   }
 
   function refreshStars() {

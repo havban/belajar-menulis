@@ -103,9 +103,11 @@ yang enak dilihat bersama anak:
 
 Begitu satu huruf (atau satu kata) selesai, tombol **Lanjut ➜** yang besar
 muncul **tepat di bawah gambar dino** — di tempat mata anak sudah tertuju
-setelah perayaan — dan tombol Lanjut di deretan bawah ikut berubah menjadi
-kuning. Tombolnya berkedip dengan cahaya, bukan dengan bergerak, supaya tidak
-jadi sasaran bergerak untuk jari kecil.
+setelah perayaan. Tombol Lanjut di deretan bawah justru **disembunyikan** saat
+itu supaya tidak ada dua tombol serupa sekaligus; sebelum hurufnya selesai
+tombol itu tetap ada, karena berguna untuk melewati huruf yang belum mau
+ditulis. Tombol besarnya berkedip dengan cahaya, bukan dengan bergerak, supaya
+tidak jadi sasaran bergerak untuk jari kecil.
 
 Setiap huruf yang berhasil ditulis mendapat **1–3 bintang**, tergantung
 kerapiannya. Saat berhasil: konfeti, bintang beterbangan, kata pujian

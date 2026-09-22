@@ -147,7 +147,7 @@ export function createKata() {
   // The big button by the dino: it only exists when the word is done.
   function showNext(on) {
     $('k-cta').classList.toggle('hidden', !on);
-    $('k-next').classList.toggle('pulse', on);
+    $('k-next').classList.toggle('hidden', on);   // see the note in tutor.js
   }
 
   function refreshCount() {

@@ -242,6 +242,11 @@ that one call (or the tag) stops it.
 
 ## Gotchas
 
+* **One "next" at a time.** When the call-to-action by the dino appears, the
+  footer's own Lanjut button hides - two buttons doing the same thing at once
+  read as clutter. It stays while the letter is unfinished, where it means
+  "skip this one". The footer is `grid-auto-flow: column`, so the remaining
+  three stretch to fill the row by themselves.
 * **Attention animations glow, they do not move.** The "Lanjut" call-to-action
   exists to be tapped by a four-year-old; a button that bounces is a moving
   target. Both it and the footer button pulse a ring of light via `box-shadow`
