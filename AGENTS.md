@@ -51,7 +51,9 @@ css/style.css         layout, colours, portrait/landscape breakpoints
 js/glyphs.js          stroke data for all 62 glyphs, plus the sampler
 js/lines.js           every spoken line, and the recording-filename rule
 js/trace.js           TracePad: guide, demo, touch capture, scoring  (start here)
-js/dino.js            every drawing: rex poses, other dinosaurs, backdrop
+js/dino.js            dino theme: rex poses, other dinosaurs, land backdrop
+js/sea.js             shark theme: shark poses, sea creatures, underwater backdrop
+js/theme.js           theme registry and the active one
 js/mascot.js          the small reacting rex, on its own canvas
 js/tutor.js           lesson screen controller
 js/game.js            game screen controller (phases, enemies, scoring)
@@ -151,6 +153,27 @@ so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice
 the utterance can neither start nor report an error, and the music would stay
 quiet forever. And every call takes a token; stale callbacks from a cancelled
 line must not un-duck or continue a sequence that has been replaced.
+
+## Themes
+
+`js/theme.js` is the only place that knows there is more than one world. A theme
+supplies a backdrop painter, a hero painter and three enemies; the mascot, the
+shell backdrop and the game just ask `theme.current()` every frame, so switching
+one is instant and needs no reload.
+
+Both hero painters answer to the same pose names - `idle`, `cheer`, `sad`,
+`run`, `roar`, `hurt` - and the same `{x, y, size, t, flip}` arguments, where
+`y` is the ground line. A shark does not stand on it, so `js/sea.js` lifts the
+body by `FLOAT`; anything else that floats should do the same rather than
+changing the call sites.
+
+The choice lives **per child** (`prefs().theme`), next to the practice-repeat
+setting: an older sibling can keep the dinosaurs while the younger one swims.
+
+Drawing rules are the same as always: canvas paths only, nothing loaded. For the
+shark specifically, cuteness is deliberate and load-bearing - a plump body, one
+oversized eye with highlights, a blush, small rounded fins, and **no eyebrow
+unless there is a mood to show**. A neutral face reads friendlier.
 
 ## The word game
 

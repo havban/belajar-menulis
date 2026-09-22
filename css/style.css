@@ -358,6 +358,19 @@ html, body {
 .wt-ch.now { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
 .big-emoji { font-size: clamp(26px, 6vmin, 40px); }
 
+/* ------------------------------------------------------------ tema */
+.theme-row { display: flex; align-items: center; gap: 8px; padding: 8px 6px 2px; flex-wrap: wrap; }
+.theme-label { font-size: clamp(15px, 3.4vmin, 20px); font-weight: 800; }
+.theme-btn {
+  flex: 1 1 100px; min-height: 48px;
+  font-family: inherit; font-weight: 800; font-size: clamp(14px, 3.2vmin, 18px);
+  border: none; border-radius: 14px; cursor: pointer;
+  background: #f1f5fa; color: var(--ink);
+  transition: transform .1s ease, background .2s;
+}
+.theme-btn.on { background: var(--blue); color: #fff; }
+.theme-btn:active { transform: translateY(3px); }
+
 /* ------------------------------------------------- pemberitahuan versi */
 .toast {
   position: fixed; z-index: 130; left: 50%; bottom: calc(74px + var(--pad-bot));

@@ -59,7 +59,7 @@
       </button>
     </div>
     <div class="menu-foot">
-      <button class="chip chip-btn" id="m-who">🦖 <b id="m-who-name">Anak</b> ▾</button>
+      <button class="chip chip-btn" id="m-who"><span id="m-who-emoji">🦖</span> <b id="m-who-name">Anak</b> ▾</button>
       <button class="chip chip-btn" id="m-awards">⭐ <b id="m-stars">0</b> bintang</button>
       <div class="chip">🏆 Skor <b id="m-best">0</b></div>
       <button class="icon-btn" id="btn-settings" aria-label="Pengaturan">⚙️</button>
@@ -76,7 +76,7 @@
       <button class="tab" data-set="kecil">abc</button>
       <button class="tab" data-set="angka">123</button>
     </div>
-    <div class="chip name-chip" id="t-name-chip" hidden>🦖 <b id="t-name"></b></div>
+    <div class="chip name-chip" id="t-name-chip" hidden><span id="t-name-emoji">🦖</span> <b id="t-name"></b></div>
     <div class="chip">⭐ <b id="t-stars">0</b></div>
   </header>
   <nav class="strip" id="t-strip" aria-label="Pilih huruf"></nav>
@@ -138,7 +138,7 @@
   <header class="bar">
     <button class="icon-btn" data-back aria-label="Kembali">‹</button>
     <h2 class="bar-title">Pencapaian</h2>
-    <div class="chip" id="a-who">🦖 <b>—</b></div>
+    <div class="chip" id="a-who"><span id="a-who-emoji">🦖</span> <b>—</b></div>
   </header>
   <nav class="strip who-strip" id="a-tabs" aria-label="Pilih anak"></nav>
   <main class="awards" id="a-body"></main>
@@ -175,8 +175,8 @@
   </div>
   <div class="overlay hidden" id="g-start">
     <div class="panel">
-      <h2>Petualangan Dino</h2>
-      <p>Musuh datang! Tulis huruf yang diminta dengan benar,
+      <h2 id="gs-title">Petualangan Dino</h2>
+      <p id="gs-intro">Musuh datang! Tulis huruf yang diminta dengan benar,
          lalu dino kamu akan menyerang. Ada 3 nyawa ❤️❤️❤️</p>
       <div class="panel-btns">
         <button class="btn" data-back>🏠 Menu</button>
@@ -194,6 +194,11 @@
     <label class="switch"><input type="checkbox" id="set-sfx" checked> <span>🔔 Suara</span></label>
     <label class="switch"><input type="checkbox" id="set-voice" checked> <span>🗣️ Suara guru</span></label>
     <label class="switch"><input type="checkbox" id="set-full"> <span>⛶ Layar penuh</span></label>
+    <div class="theme-row" role="group" aria-label="Tema">
+      <span class="theme-label">🎨 Tema</span>
+      <button class="theme-btn" data-theme="dino">🦖 Dino</button>
+      <button class="theme-btn" data-theme="hiu">🦈 Hiu</button>
+    </div>
     <div class="panel-btns">
       <button class="btn" id="set-profiles">👧 Ganti Anak</button>
       <button class="btn" id="set-name">✏️ Ganti Nama</button>

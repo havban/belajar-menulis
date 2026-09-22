@@ -144,6 +144,12 @@ bisa menambah.
   pengganti suara bawaan perangkat — suara ayah, ibu, atau guru sekalipun.
   Caranya ada di [`voice/README.md`](voice/README.md); kalimat yang belum
   direkam tetap dibacakan perangkat, jadi rekaman boleh dicicil.
+* **Dua tema: 🦖 Dino dan 🦈 Hiu.** Pilih di ⚙️. Tema hiu memindahkan seluruh
+  suasana ke **dasar laut** — air biru dengan berkas cahaya, gelembung, rumput
+  laut, karang, ikan dan ubur-ubur yang lewat — maskot dinonya berganti jadi
+  **hiu kecil yang imut**, dan di permainan hiu itulah yang melawan ikan
+  penyusup, ubur-ubur, dan bos gurita. **Tema disimpan per anak**, jadi kakak
+  bisa main dino sementara adik main hiu di perangkat yang sama.
 * **Layar penuh.** Di ⚙️ ada pilihan layar penuh supaya jari kecil tidak
   tidak sengaja menekan tombol-tombol peramban.
 * **Pemberitahuan versi baru.** Kalau aplikasi diperbarui saat sedang dipakai,
@@ -205,7 +211,9 @@ index.html          semua layar: menu, belajar, game, pengaturan
 css/style.css       tata letak dan warna, termasuk mode potret & lanskap
 js/glyphs.js        bentuk 62 huruf & angka: urutan dan arah goresan
 js/trace.js         papan tulis: menggambar panduan, menangkap jari, menilai
-js/dino.js          semua gambar — dinosaurus dan pemandangan, digambar kode
+js/dino.js          gambar tema dino: dinosaurus dan pemandangan darat
+js/sea.js           gambar tema hiu: hiu, ikan, ubur-ubur, gurita, dasar laut
+js/theme.js         daftar tema dan tema yang sedang dipakai
 js/mascot.js        dino kecil yang menemani dan ikut bersorak
 js/tutor.js         layar belajar
 js/game.js          layar permainan

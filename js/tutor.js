@@ -8,6 +8,7 @@ import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as lines from './lines.js?v=__BUILD__';
 import * as stats from './analytics.js?v=__BUILD__';
+import * as theme from './theme.js?v=__BUILD__';
 
 const PRAISE = ['Hebat!', 'Keren!', 'Pintar!', 'Bagus sekali!', 'Mantap!', 'Wow!'];
 const CHEER_LINE = ['Hebat sekali!', 'Keren, kamu pintar!', 'Bagus! Lanjut ya!', 'Wah, rapi sekali!'];
@@ -94,6 +95,7 @@ export function createTutor() {
     const who = progress.name();
     chip.hidden = !who;
     $('t-name').textContent = who;
+    $('t-name-emoji').textContent = theme.current().emoji;
   }
 
   // Once the letter is finished the only thing left to do is move on, so a big

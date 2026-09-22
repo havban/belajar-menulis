@@ -1,7 +1,7 @@
 // The little T-Rex that watches the child work. It owns its own canvas and
 // only animates while its screen is on, so idle screens cost nothing.
 
-import { drawRex } from './dino.js?v=__BUILD__';
+import * as theme from './theme.js?v=__BUILD__';
 
 export class Mascot {
   constructor(canvas, base = 'idle') {
@@ -41,6 +41,6 @@ export class Mascot {
     c.clearRect(0, 0, r.width, r.height);
     // the rex box is about 150 wide for 100 tall once the tail is counted
     const size = Math.min(r.height * 0.94, r.width * 0.72);
-    drawRex(c, { x: r.width * 0.56, y: r.height - 2, size, t: this.t, pose: this.pose });
+    theme.current().drawHero(c, { x: r.width * 0.56, y: r.height - 2, size, t: this.t, pose: this.pose });
   }
 }

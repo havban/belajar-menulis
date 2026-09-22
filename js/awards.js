@@ -8,6 +8,7 @@ import { SETS, wordOf } from './glyphs.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as stats from './analytics.js?v=__BUILD__';
+import * as theme from './theme.js?v=__BUILD__';
 
 const $ = (id) => document.getElementById(id);
 const TOTAL = SETS.kapital.chars.length + SETS.kecil.chars.length + SETS.angka.chars.length;
@@ -101,6 +102,7 @@ export function createAwards(nav) {
     const starsFor = (ch) => progress.starsOf(viewing, ch);
     const who = $('a-who').querySelector('b');
     who.textContent = sum.name || 'Anak';
+    $('a-who-emoji').textContent = theme.current().emoji;
 
     const perSet = {};
     for (const key of Object.keys(SETS)) {

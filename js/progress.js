@@ -24,6 +24,7 @@ const newProfile = (name = '') => ({
   words: 0,           // words finished in the writing game
   sentences: 0,
   repeat: 1,          // how many times a letter is written per page
+  theme: 'dino',      // which world: dino or hiu
 });
 
 const blank = () => ({ v: 2, active: '', profiles: [], settings: { music: true, sfx: true, voice: true } });
@@ -47,6 +48,7 @@ function fixProfile(p) {
     words: Number(p.words) || 0,
     sentences: Number(p.sentences) || 0,
     repeat: Math.min(4, Math.max(1, Number(p.repeat) || 1)),
+    theme: p.theme === 'hiu' ? 'hiu' : 'dino',
   };
 }
 
@@ -237,10 +239,11 @@ export function bumpGames() {
 // Sound belongs to the device; how many times a letter is written belongs to
 // the child, because a five-year-old and an eight-year-old want different
 // amounts of it.
-export const prefs = () => ({ ...data.settings, repeat: active().repeat });
+export const prefs = () => ({ ...data.settings, repeat: active().repeat, theme: active().theme || 'dino' });
 
 export function setPref(k, v) {
   if (k === 'repeat') active().repeat = Math.min(4, Math.max(1, Number(v) || 1));
+  else if (k === 'theme') active().theme = v === 'hiu' ? 'hiu' : 'dino';
   else data.settings[k] = v;
   save();
 }

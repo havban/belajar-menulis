@@ -5,7 +5,7 @@
 
 import { SETS, spokenName, setOf } from './glyphs.js?v=__BUILD__';
 import { TracePad, reasonText } from './trace.js?v=__BUILD__';
-import { drawBackdrop, drawRex, drawPtero } from './dino.js?v=__BUILD__';
+import * as theme from './theme.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as fx from './fx.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
@@ -79,9 +79,9 @@ export function createGame() {
     const boss = S.round % 5 === 0;
     const flying = !boss && S.round % 2 === 0;
     S.enemy = {
-      type: boss ? 'boss' : flying ? 'ptero' : 'raptor',
+      type: boss ? 'boss' : flying ? 'flyer' : 'raptor',
       x: W + W * 0.2, y: 0, vx: 0, vy: 0, rot: 0, dead: false,
-      size: boss ? H * 0.46 : flying ? H * 0.26 : H * 0.34,
+      size: H * theme.current().enemies[boss ? 'boss' : flying ? 'flyer' : 'raptor'].size,
     };
     S.timeMax = Math.max(11, 22 - S.level * 1.4);
     pad.setGlyph(S.ch, {
@@ -121,7 +121,7 @@ export function createGame() {
     e.rot = 0.1;
     audio.sfx('stomp');
     S.shake = 1;
-    puff(e.x, groundY() - (e.type === 'ptero' ? H * 0.3 : H * 0.1), 22);
+    puff(e.x, groundY() - (theme.current().enemies[e.type].flying ? H * 0.3 : H * 0.1), 22);
     const stars = pad.stars || 1;
     const bonus = Math.round(S.timeLeft) + S.level * 2;
     const gained = 10 + stars * 5 + bonus;
@@ -154,7 +154,7 @@ export function createGame() {
     S.shake = 1;
     const e = S.enemy;
     e.vx = -W * 0.9;
-    e.vy = e.type === 'ptero' ? 0 : -H * 0.4;
+    e.vy = theme.current().enemies[e.type].flying ? 0 : -H * 0.4;
     floater(W * 0.3, groundY() - H * 0.4, '💔', '#ff4d6d');
     const who = progress.name();
     if (S.hearts > 0) audio.speakParts(audio.pickLine(lines.forName(lines.OUCH, lines.OUCH_WHO, who), said, 'ouch')(who));
@@ -247,7 +247,7 @@ export function createGame() {
       if (S.phaseT > 1.15) { S.lunge = 0; startRound(); }
     } else if (S.phase === 'hurt') {
       e.x += e.vx * dt;
-      if (e.type !== 'ptero') { e.y += e.vy * dt; e.vy += H * 2.4 * dt; if (e.y > 0) { e.y = 0; e.vy = 0; } }
+      if (!theme.current().enemies[e.type].flying) { e.y += e.vy * dt; e.vy += H * 2.4 * dt; if (e.y > 0) { e.y = 0; e.vy = 0; } }
       if (S.phaseT > 1.4) {
         if (S.hearts <= 0) gameOver(); else startRound();
       }
@@ -256,31 +256,23 @@ export function createGame() {
 
   function render() {
     const gY = groundY();
+    const th = theme.current();
     sctx.save();
     if (S.shake > 0) sctx.translate(Math.sin(S.t * 70) * S.shake * 7, Math.cos(S.t * 63) * S.shake * 4);
-    drawBackdrop(sctx, W, H, S.t, { scroll: S.scroll, groundY: gY });
+    th.backdrop(sctx, W, H, S.t, { scroll: S.scroll, groundY: gY });
 
     // the hero
     const pose = S.phase === 'attack' ? 'roar' : S.phase === 'hurt' ? 'hurt' : 'run';
-    drawRex(sctx, { x: rexX() + S.lunge, y: gY + H * 0.02, size: H * 0.44, t: S.t, pose });
+    th.drawHero(sctx, { x: rexX() + S.lunge, y: gY + H * 0.02, size: H * 0.44, t: S.t, pose });
 
     const e = S.enemy;
     if (e) {
+      const spec = th.enemies[e.type];
       sctx.save();
-      if (e.type === 'ptero') {
-        sctx.translate(e.x, gY - H * 0.34 + e.y + Math.sin(S.t * 3) * H * 0.02);
-        sctx.rotate(e.rot);
-        drawPtero(sctx, { x: 0, y: 0, size: e.size, t: S.t, color: '#e4572e' });
-      } else {
-        sctx.translate(e.x, gY + H * 0.02 + e.y);
-        sctx.rotate(e.rot);
-        drawRex(sctx, {
-          x: 0, y: 0, size: e.size, t: S.t, flip: true,
-          pose: e.dead ? 'hurt' : 'run',
-          skin: e.type === 'boss' ? '#9b51e0' : '#e4572e',
-          belly: e.type === 'boss' ? '#e6c6f5' : '#ffd6a5',
-        });
-      }
+      if (spec.flying) sctx.translate(e.x, gY - H * 0.34 + e.y + Math.sin(S.t * 3) * H * 0.02);
+      else sctx.translate(e.x, gY + H * 0.02 + e.y);
+      sctx.rotate(e.rot);
+      spec.draw(sctx, { x: 0, y: 0, size: e.size, t: S.t, flip: true, pose: e.dead ? 'hurt' : 'run' });
       sctx.restore();
     }
 
@@ -335,9 +327,16 @@ export function createGame() {
   const ro = new ResizeObserver(resize);
   ro.observe(scene);
 
+  // The start panel names the hero, so it follows the theme.
+  function dressForTheme() {
+    $('gs-title').textContent = theme.current().title;
+    $('gs-intro').textContent = theme.current().intro;
+  }
+
   return {
-    pad, state: S,
+    pad, state: S, dressForTheme,
     open() {
+      dressForTheme();
       resize();
       S.phase = 'ready';
       S.enemy = null;

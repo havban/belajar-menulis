@@ -1,6 +1,6 @@
 // App shell: the animated backdrop, screen switching, the menu and settings.
 
-import { drawBackdrop } from './dino.js?v=__BUILD__';
+import * as theme from './theme.js?v=__BUILD__';
 import { Mascot } from './mascot.js?v=__BUILD__';
 import { createTutor } from './tutor.js?v=__BUILD__';
 import { createGame } from './game.js?v=__BUILD__';
@@ -38,7 +38,7 @@ function bgLoop(now) {
   // never lag behind a finger, with the frame budget it needs.
   if (now - bgDrawn < 48) return;
   bgDrawn = now;
-  drawBackdrop(bgx, innerWidth, innerHeight, bgT, { scroll: bgT * 14, groundY: innerHeight * 0.86 });
+  theme.current().backdrop(bgx, innerWidth, innerHeight, bgT, { scroll: bgT * 14, groundY: innerHeight * 0.86 });
 }
 
 addEventListener('resize', bgResize);
@@ -58,10 +58,13 @@ function refreshMenu() {
   $('m-stars').textContent = progress.totalStars();
   $('m-best').textContent = progress.best();
   const who = progress.name();
+  const th = theme.current();
   $('m-who-name').textContent = who || 'Anak';
+  $('m-who-emoji').textContent = th.emoji;
   $('m-greet').textContent = who
-    ? `Halo, ${who}! Ayo belajar menulis 🦖`
-    : 'Petualangan menulis bersama dino 🦖';
+    ? `Halo, ${who}! Ayo belajar menulis ${th.emoji}`
+    : th.subtitle;
+  for (const b of document.querySelectorAll('.theme-btn')) b.classList.toggle('on', b.dataset.theme === th.id);
 }
 
 // ---------------------------------------------------------- the name
@@ -103,7 +106,8 @@ function saveName() {
 // Everything that shows a name or a star count has to catch up when the active
 // profile changes.
 function afterProfileChange() {
-  refreshMenu();
+  refreshMenu();          // also re-reads the theme, which lives per child
+  game.dressForTheme();
   tutor.showName();
   tutor.refreshFromProfile();
   if (current === 'pencapaian') awards.render();
@@ -244,6 +248,14 @@ $('set-voice').checked = prefs.voice;
 
 $('btn-settings').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.remove('hidden'); });
 $('set-name').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); askName('edit'); });
+for (const b of document.querySelectorAll('.theme-btn')) {
+  b.addEventListener('click', () => {
+    audio.sfx('pop');
+    theme.set(b.dataset.theme);
+    refreshMenu();
+    game.dressForTheme();
+  });
+}
 $('set-profiles').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); openProfiles(); });
 $('set-close').addEventListener('click', () => { audio.sfx('tap'); $('s-settings').classList.add('hidden'); });
 $('set-music').addEventListener('change', (e) => { audio.unlock(); audio.setMusic(e.target.checked); progress.setPref('music', e.target.checked); });
@@ -338,4 +350,4 @@ if (!progress.name()) {
   setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
 }
 
-window.__app = { show, progress, audio, stats, update, askName, openProfiles, awards, kata, get screen() { return current; }, tutor, game };
+window.__app = { show, progress, audio, stats, update, theme, askName, openProfiles, awards, kata, get screen() { return current; }, tutor, game };
