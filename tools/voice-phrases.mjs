@@ -8,6 +8,7 @@
 
 import { allChars, spokenName, shortName, wordOf } from '../js/glyphs.js';
 import * as L from '../js/lines.js';
+import { allTexts } from '../js/words.js';
 
 const core = new Map();       // filename -> text
 const extra = new Map();
@@ -50,6 +51,12 @@ add(core, L.GAME_OVER);
 add(core, ['Halo,', 'ayo kita belajar menulis!']);
 for (let lv = 2; lv <= 9; lv++) add(core, L.LEVEL(lv));
 core.delete('');
+
+// The word game: every word and sentence it can ask for.
+for (const text of allTexts()) {
+  for (const t of L.WORD_ASK) add(extra, t(text));
+  for (const t of L.WORD_DONE) add(extra, t(text));
+}
 
 // The "listen" button says the example word too - nice to have, not essential.
 for (const ch of allChars()) {

@@ -69,6 +69,19 @@ export const DONE = [
   (n, t) => [UP('Mantap!'), 'Satu lagi selesai,', N(n), t],
 ];
 
+// The word game: the invitation and the cheer when a word is finished.
+export const WORD_ASK = [
+  (w) => ['Ayo tulis kata', N(w)],
+  (w) => ['Sekarang kata', N(w)],
+  (w) => [UP('Yuk!'), 'Kita tulis', N(w)],
+  (w) => ['Coba tulis', N(w), 'ya.'],
+];
+export const WORD_DONE = [
+  (w) => [UP('Hebat!'), 'Kamu menulis', N(w)],
+  (w) => [UP('Pintar sekali!'), N(w), 'sudah jadi.'],
+  (w) => [UP('Keren!'), 'Sekarang kamu bisa menulis', N(w)],
+];
+
 // Game: the call, the hit, the miss.
 export const CALL = [
   (n) => ['Tulis', N(n)],

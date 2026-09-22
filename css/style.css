@@ -80,9 +80,10 @@ html, body {
 }
 
 /* ---------------------------------------------------------------- menu */
+#s-menu { overflow-y: auto; overflow-x: hidden; }
 .menu-inner {
   margin: auto;
-  width: min(760px, 96vw);
+  width: min(920px, 96vw);
   display: flex; flex-direction: column; align-items: center;
   gap: clamp(6px, 1.6vh, 16px);
   text-align: center;
@@ -101,10 +102,11 @@ html, body {
   color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, .35);
 }
 .mascot { width: min(46vw, 230px); height: min(30vh, 210px); }
-.mascot.big { width: min(60vw, 300px); height: min(28vh, 240px); }
+.mascot.big { width: min(60vw, 300px); height: min(24vh, 210px); }
+@media (max-height: 700px) { .mascot.big { height: min(18vh, 150px); } }
 .menu-cards { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; width: 100%; }
 .card {
-  flex: 1 1 260px;
+  flex: 1 1 210px;
   display: grid; gap: 2px;
   padding: clamp(10px, 2.2vh, 20px) 16px;
   text-align: center;
@@ -128,7 +130,12 @@ html, body {
 
 /* ----------------------------------------------------------- top bars */
 .bar { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
-.tabs { display: flex; gap: 6px; margin: 0 auto; }
+.tabs {
+  display: flex; gap: 6px; margin: 0 auto;
+  overflow-x: auto; scrollbar-width: none; max-width: 100%;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; }
 .tab {
   padding: 10px 18px;
   font-size: clamp(15px, 3.4vmin, 21px);
@@ -333,6 +340,19 @@ html, body {
   .letter { min-width: 46px; height: 46px; font-size: 20px; }
   .btn { min-height: 46px; padding: 8px 12px; }
 }
+
+/* ------------------------------------------------------- tulis kata */
+.card-word { background: #d9f2e6; }
+.word-target { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.wt-word { display: flex; gap: 2px; padding: 2px 4px; border-radius: 10px; }
+.wt-word.now { background: rgba(77, 150, 255, .12); }
+.wt-ch {
+  font-size: clamp(20px, 5vmin, 34px); font-weight: 900; line-height: 1.1;
+  color: #b6c3d1;
+}
+.wt-word.done .wt-ch, .wt-ch.on { color: var(--pink); }
+.wt-ch.now { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+.big-emoji { font-size: clamp(26px, 6vmin, 40px); }
 
 /* ------------------------------------------------- pemberitahuan versi */
 .toast {

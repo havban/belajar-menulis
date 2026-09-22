@@ -46,6 +46,8 @@ function badgeList(sum, perSet) {
     ['🔡', 'abc Lengkap', perSet.kecil.mastered === SETS.kecil.chars.length],
     ['🔢', '123 Lengkap', perSet.angka.mastered === SETS.angka.chars.length],
     ['🎮', 'Pendekar Dino', sum.best >= 300],
+    ['📖', 'Perangkai Kata', sum.words >= 10],
+    ['📝', 'Penulis Kalimat', sum.sentences >= 1],
   ];
   const wrap = el('div', 'badges');
   for (const [icon, label, earned] of list) {
@@ -115,6 +117,8 @@ export function createAwards(nav) {
       tile(`${sum.mastered}/${TOTAL}`, 'huruf dikuasai'),
       tile(sum.learned, 'huruf dicoba'),
       tile(sum.best, 'skor terbaik'),
+      tile(sum.words, 'kata ditulis'),
+      tile(sum.sentences, 'kalimat'),
       tile(sum.games, 'permainan'),
       tile(shortDate(sum.created), 'mulai belajar'),
     );

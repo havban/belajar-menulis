@@ -162,7 +162,7 @@ Ini yang diucapkan berulang-ulang sepanjang aplikasi.
 | `yuk` | Yuk! |
 | `yuk-kita-tulis` | yuk kita tulis |
 
-## Tambahan (108 rekaman)
+## Tambahan (161 rekaman)
 
 Hanya terdengar saat anak menekan tombol 🔊 Dengar. Boleh dilewati - bagian ini
 akan memakai suara bawaan perangkat.
@@ -171,10 +171,22 @@ akan memakai suara bawaan perangkat.
 |---|---|
 | `a-seperti-ayam` | a, seperti Ayam. |
 | `a-untuk-ayam` | a untuk Ayam. |
+| `adik-main-bola` | Adik main bola |
+| `aku-suka-susu` | Aku suka susu |
+| `api` | api |
+| `ayah-baca-koran` | Ayah baca koran |
+| `ayam` | ayam |
 | `ayam-diawali-a` | Ayam, diawali a. |
+| `ayo-tulis-kata` | Ayo tulis kata |
+| `baju` | baju |
+| `bayi` | bayi |
 | `be-seperti-bola` | be, seperti Bola. |
 | `be-untuk-bola` | be untuk Bola. |
+| `bola` | bola |
 | `bola-diawali-be` | Bola, diawali be. |
+| `budi-baca-buku` | Budi baca buku |
+| `buku` | buku |
+| `bunga` | bunga |
 | `ce-seperti-cicak` | ce, seperti Cicak. |
 | `ce-untuk-cicak` | ce untuk Cicak. |
 | `cicak-diawali-ce` | Cicak, diawali ce. |
@@ -184,6 +196,7 @@ akan memakai suara bawaan perangkat.
 | `delapan-seperti-delapan` | delapan, seperti Delapan. |
 | `delapan-untuk-delapan` | delapan untuk Delapan. |
 | `dinosaurus-diawali-de` | Dinosaurus, diawali de. |
+| `dua` | dua |
 | `dua-diawali-dua` | Dua, diawali dua. |
 | `dua-seperti-dua` | dua, seperti Dua. |
 | `dua-untuk-dua` | dua untuk Dua. |
@@ -211,64 +224,104 @@ akan memakai suara bawaan perangkat.
 | `es-seperti-sepeda` | es, seperti Sepeda. |
 | `es-untuk-sepeda` | es untuk Sepeda. |
 | `foto-diawali-ef` | Foto, diawali ef. |
+| `gajah` | gajah |
 | `gajah-diawali-ge` | Gajah, diawali ge. |
 | `ge-seperti-gajah` | ge, seperti Gajah. |
 | `ge-untuk-gajah` | ge untuk Gajah. |
+| `gigi` | gigi |
 | `ha-seperti-hujan` | ha, seperti Hujan. |
 | `ha-untuk-hujan` | ha untuk Hujan. |
 | `hujan-diawali-ha` | Hujan, diawali ha. |
 | `i-seperti-ikan` | i, seperti Ikan. |
 | `i-untuk-ikan` | i untuk Ikan. |
+| `ibu` | ibu |
+| `ibu-masak` | Ibu masak |
 | `ikan-diawali-i` | Ikan, diawali i. |
+| `ini-bola` | Ini bola |
+| `itu-buku` | Itu buku |
+| `jam` | jam |
 | `je-seperti-jeruk` | je, seperti Jeruk. |
 | `je-untuk-jeruk` | je untuk Jeruk. |
+| `jeruk` | jeruk |
 | `jeruk-diawali-je` | Jeruk, diawali je. |
 | `ka-seperti-kucing` | ka, seperti Kucing. |
 | `ka-untuk-kucing` | ka untuk Kucing. |
+| `kakak-beli-roti` | Kakak beli roti |
+| `kaki` | kaki |
+| `kamu-menulis` | Kamu menulis |
+| `kapal` | kapal |
+| `kelas` | kelas |
 | `ki-seperti-quran` | ki, seperti Quran. |
 | `ki-untuk-quran` | ki untuk Quran. |
+| `kita-pergi-ke-kelas` | Kita pergi ke kelas |
+| `kucing` | kucing |
 | `kucing-diawali-ka` | Kucing, diawali ka. |
+| `kuda` | kuda |
+| `kue` | kue |
 | `lebah-diawali-el` | Lebah, diawali el. |
 | `lima-diawali-lima` | Lima, diawali lima. |
 | `lima-seperti-lima` | lima, seperti Lima. |
 | `lima-untuk-lima` | lima untuk Lima. |
+| `mata` | mata |
 | `matahari-diawali-em` | Matahari, diawali em. |
+| `meja` | meja |
+| `mie` | mie |
+| `mobil` | mobil |
 | `naga-diawali-en` | Naga, diawali en. |
+| `nasi` | nasi |
 | `nol-diawali-nol` | Nol, diawali nol. |
 | `nol-seperti-nol` | nol, seperti Nol. |
 | `nol-untuk-nol` | nol untuk Nol. |
 | `o-seperti-ombak` | o, seperti Ombak. |
 | `o-untuk-ombak` | o untuk Ombak. |
 | `ombak-diawali-o` | Ombak, diawali o. |
+| `payung` | payung |
 | `pe-seperti-pohon` | pe, seperti Pohon. |
 | `pe-untuk-pohon` | pe untuk Pohon. |
+| `pintar-sekali` | Pintar sekali! |
+| `pintu` | pintu |
+| `pisang` | pisang |
 | `pohon-diawali-pe` | Pohon, diawali pe. |
 | `quran-diawali-ki` | Quran, diawali ki. |
+| `rok` | rok |
+| `roti` | roti |
 | `rumah-diawali-er` | Rumah, diawali er. |
+| `sapi` | sapi |
 | `satu-diawali-satu` | Satu, diawali satu. |
 | `satu-seperti-satu` | satu, seperti Satu. |
 | `satu-untuk-satu` | satu untuk Satu. |
+| `saya-sayang-ibu` | Saya sayang ibu |
+| `sekarang-kamu-bisa-menulis` | Sekarang kamu bisa menulis |
+| `sekarang-kata` | Sekarang kata |
 | `sembilan-diawali-sembilan` | Sembilan, diawali sembilan. |
 | `sembilan-seperti-sembilan` | sembilan, seperti Sembilan. |
 | `sembilan-untuk-sembilan` | sembilan untuk Sembilan. |
+| `sepatu` | sepatu |
 | `sepeda-diawali-es` | Sepeda, diawali es. |
+| `sudah-jadi` | sudah jadi. |
+| `sup` | sup |
+| `susu` | susu |
+| `tas` | tas |
 | `te-seperti-topi` | te, seperti Topi. |
 | `te-untuk-topi` | te untuk Topi. |
 | `tiga-diawali-tiga` | Tiga, diawali tiga. |
 | `tiga-seperti-tiga` | tiga, seperti Tiga. |
 | `tiga-untuk-tiga` | tiga untuk Tiga. |
+| `topi` | topi |
 | `topi-diawali-te` | Topi, diawali te. |
 | `tujuh-diawali-tujuh` | Tujuh, diawali tujuh. |
 | `tujuh-seperti-tujuh` | tujuh, seperti Tujuh. |
 | `tujuh-untuk-tujuh` | tujuh untuk Tujuh. |
 | `u-seperti-ular` | u, seperti Ular. |
 | `u-untuk-ular` | u untuk Ular. |
+| `ubi` | ubi |
 | `ular-diawali-u` | Ular, diawali u. |
 | `vas-bunga-diawali-ve` | Vas bunga, diawali ve. |
 | `ve-seperti-vas-bunga` | ve, seperti Vas bunga. |
 | `ve-untuk-vas-bunga` | ve untuk Vas bunga. |
 | `we-seperti-wortel` | we, seperti Wortel. |
 | `we-untuk-wortel` | we untuk Wortel. |
+| `wortel` | wortel |
 | `wortel-diawali-we` | Wortel, diawali we. |
 | `xilofon-diawali-eks` | Xilofon, diawali eks. |
 | `ye-seperti-yoyo` | ye, seperti Yoyo. |

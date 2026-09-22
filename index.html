@@ -47,6 +47,11 @@
         <span class="card-title">Belajar Menulis</span>
         <span class="card-sub">Huruf &amp; angka, satu per satu</span>
       </button>
+      <button class="card card-word" data-go="kata">
+        <span class="card-emoji">📖</span>
+        <span class="card-title">Tulis Kata</span>
+        <span class="card-sub">Kata &amp; kalimat sederhana</span>
+      </button>
       <button class="card card-play" data-go="game">
         <span class="card-emoji">🎮</span>
         <span class="card-title">Main Game</span>
@@ -98,6 +103,32 @@
     <button class="btn" id="t-clear">🔄 Ulangi</button>
     <button class="btn" id="t-say">🔊 Dengar</button>
     <button class="btn primary" id="t-next">Lanjut ➜</button>
+  </footer>
+</section>
+
+<!-- ------------------------------------------------------ tulis kata -->
+<section class="screen" id="s-kata">
+  <header class="bar">
+    <button class="icon-btn" data-back aria-label="Kembali">‹</button>
+    <div class="tabs" id="k-tabs"></div>
+    <div class="chip">📖 <b id="k-score">0</b> kata</div>
+  </header>
+  <main class="stage">
+    <aside class="info">
+      <div class="word-target" id="k-text"></div>
+      <span class="emoji big-emoji" id="k-emoji">⚽</span>
+      <canvas class="mascot" id="k-mascot" aria-hidden="true"></canvas>
+      <p class="tip" id="k-tip">Tulis hurufnya satu per satu ya!</p>
+    </aside>
+    <div class="pad-wrap">
+      <canvas id="k-pad" class="pad"></canvas>
+    </div>
+  </main>
+  <footer class="controls">
+    <button class="btn" id="k-demo">👀 Contoh</button>
+    <button class="btn" id="k-clear">🔄 Ulangi</button>
+    <button class="btn" id="k-say">🔊 Dengar</button>
+    <button class="btn primary" id="k-next">Lanjut ➜</button>
   </footer>
 </section>
 

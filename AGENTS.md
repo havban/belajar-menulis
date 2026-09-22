@@ -59,6 +59,8 @@ js/audio.js           synthesised music, effects and Indonesian speech
 js/fx.js              full-screen confetti/star/praise layer
 js/progress.js        profiles: stars per glyph, high score, per-child settings
 js/awards.js          achievements screen (tiles, badges, letter map)
+js/words.js           word and sentence lists by level
+js/kata.js            the word-writing screen
 js/update.js          new-build check, reload, AGPL source stamp
 js/analytics.js       local tally + prefixed aggregate events
 js/main.js            backdrop, routing, settings, service worker
@@ -149,6 +151,23 @@ so `speakParts` also arms a **watchdog** - on a device with no Indonesian voice
 the utterance can neither start nor report an error, and the music would stay
 quiet forever. And every call takes a token; stale callbacks from a cancelled
 line must not un-duck or continue a sequence that has been replaced.
+
+## The word game
+
+`js/kata.js` writes whole words: the pad puts **one box per letter**, so a word
+is written the way it is read. That is why `TracePad` holds a list of *boxes*,
+each with its own letter (`setWord`), rather than one glyph repeated
+(`setGlyph`, which is now the special case where every box holds the same one).
+
+Word pages use `layout: 'row'`, which keeps the boxes on one line and only
+breaks onto the next when they would drop below about 86px - a word laid out as
+a 2x2 grid stops reading like a word. Sentences are written one word per page,
+with the whole sentence kept in view.
+
+Content lives in `js/words.js`. Two rules there: **only letters the app can
+teach** (no hyphens, no full stops - there is no glyph for one, and a character
+the child cannot be shown is a dead end), and the emoji has to carry the meaning
+on its own for a child who cannot read the word yet.
 
 ## Profiles
 

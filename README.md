@@ -49,7 +49,23 @@ dibuka, aplikasi ini juga bisa dipakai **tanpa internet**.
   diingat untuk huruf-huruf berikutnya. Mengulang tulisan beberapa kali inilah
   yang paling cepat melancarkan tangan anak.
 
-### 2. Main Game — Petualangan Dino
+### 2. Tulis Kata
+
+Setelah hafal huruf, anak menulis **kata utuh** — satu kotak untuk setiap huruf,
+berjajar ke kanan seperti kata itu dibaca, bukan huruf lepas satu per satu.
+
+* Empat tingkat: **3 huruf** (ibu, api, kue…), **4 huruf** (bola, buku, susu…),
+  **5–6 huruf** (bunga, kucing, sepatu…), dan **Kalimat** ("Ini bola", "Ibu
+  masak", "Adik main bola").
+* Kalimat ditulis **satu kata per halaman**, tapi seluruh kalimatnya tetap
+  terlihat di samping supaya anak tahu sudah sampai mana — huruf yang selesai
+  berubah warna, huruf yang sedang ditulis digarisbawahi.
+* Setiap kata punya gambar (emoji) supaya anak yang belum bisa membaca tetap
+  tahu artinya, dan tombol 🔊 Dengar membacakannya.
+* Di layar sempit kata panjang dipatahkan ke baris berikutnya seperti tulisan
+  biasa, jadi kotaknya tidak pernah mengecil sampai sulit ditulis jari.
+
+### 3. Main Game — Petualangan Dino
 
 Belajar sambil bermain: dino hijau berlari, lalu **musuh datang** (raptor
 merah, pterodactyl, atau bos ungu). Satu-satunya cara melawan adalah
@@ -65,23 +81,25 @@ hati berkurang. Ada 3 hati, skor, dan level yang makin menantang:
 
 Skor terbaik disimpan di perangkat.
 
-### 3. Pencapaian
+### 4. Pencapaian
 
 Tekan tombol **⭐ bintang** di menu untuk membuka layar **Pencapaian** — ringkasan
 yang enak dilihat bersama anak:
 
-* Enam kartu ringkas: jumlah bintang, huruf dikuasai (⭐⭐⭐) dari 62, huruf yang
-  pernah dicoba, skor terbaik, jumlah permainan, dan tanggal mulai belajar.
+* Kartu ringkas: jumlah bintang, huruf dikuasai (⭐⭐⭐) dari 62, huruf yang
+  pernah dicoba, skor terbaik, **kata dan kalimat yang sudah ditulis**, jumlah
+  permainan, dan tanggal mulai belajar.
 * **Lencana**: 🥚 Baru Mulai, 🦖 Petualang Huruf (10 huruf dikuasai), ⭐ Bintang
   Huruf (30), 👑 Juara Menulis (62), 🔤/🔡/🔢 untuk tiap kelompok yang lengkap,
-  dan 🎮 Pendekar Dino (skor 300+). Lencana yang belum diraih tampil pudar.
+  🎮 Pendekar Dino (skor 300+), 📖 Perangkai Kata (10 kata), dan 📝 Penulis
+  Kalimat. Lencana yang belum diraih tampil pudar.
 * **Peta huruf**: seluruh A–Z, a–z, dan 0–9 dengan bintang masing-masing —
   emas untuk ⭐⭐⭐, biru ⭐⭐, oranye ⭐, abu-abu untuk yang belum dicoba. Sekali
   lihat, orang tua tahu huruf mana yang masih perlu dilatih.
 * Kalau ada lebih dari satu anak di perangkat itu, ada baris nama di atas untuk
   **melihat pencapaian anak lain** tanpa berpindah profil.
 
-### 4. Penghargaan
+### 5. Penghargaan
 
 Setiap huruf yang berhasil ditulis mendapat **1–3 bintang**, tergantung
 kerapiannya. Saat berhasil: konfeti, bintang beterbangan, kata pujian
@@ -189,6 +207,8 @@ js/fx.js            konfeti, bintang, kata pujian
 js/progress.js      profil anak, bintang & skor (localStorage)
 js/analytics.js     rekap lokal + event agregat (berawalan belajar-menulis/)
 js/awards.js        layar pencapaian: kartu, lencana, peta huruf
+js/words.js         daftar kata & kalimat sederhana per tingkat
+js/kata.js          layar Tulis Kata
 js/lines.js         semua kalimat yang diucapkan, beserta variasinya
 js/main.js          latar belakang, perpindahan layar, pengaturan
 voice/              rekaman suara opsional (lihat voice/README.md)

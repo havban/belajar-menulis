@@ -5,13 +5,14 @@ import { Mascot } from './mascot.js?v=__BUILD__';
 import { createTutor } from './tutor.js?v=__BUILD__';
 import { createGame } from './game.js?v=__BUILD__';
 import { createAwards } from './awards.js?v=__BUILD__';
+import { createKata } from './kata.js?v=__BUILD__';
 import * as update from './update.js?v=__BUILD__';
 import * as audio from './audio.js?v=__BUILD__';
 import * as progress from './progress.js?v=__BUILD__';
 import * as stats from './analytics.js?v=__BUILD__';
 
 const $ = (id) => document.getElementById(id);
-const screens = { menu: $('s-menu'), belajar: $('s-belajar'), game: $('s-game'), pencapaian: $('s-pencapaian') };
+const screens = { menu: $('s-menu'), belajar: $('s-belajar'), kata: $('s-kata'), game: $('s-game'), pencapaian: $('s-pencapaian') };
 let current = 'menu';
 
 // ---------------------------------------------------------- backdrop
@@ -187,10 +188,12 @@ nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveName()
 const tutor = createTutor();
 const game = createGame();
 const awards = createAwards();
-const parts = { belajar: tutor, game, pencapaian: awards };
+const kata = createKata();
+const parts = { belajar: tutor, kata, game, pencapaian: awards };
 
 const SCREEN_EVENT = {
   belajar: ['belajar-dibuka', 'Membuka layar belajar'],
+  kata: ['kata-dibuka', 'Membuka tulis kata'],
   game: ['game-dibuka', 'Membuka permainan'],
   pencapaian: ['pencapaian-dibuka', 'Membuka pencapaian'],
 };
@@ -323,6 +326,7 @@ refreshMenu();
 const last = progress.lastSession();
 if (last && last.screen && last.screen !== 'menu' && screens[last.screen]) {
   if (last.screen === 'belajar') tutor.resumeAt(last.set, last.ch);
+  if (last.screen === 'kata' && last.level) kata.setLevel(last.level);
   if (last.screen === 'pencapaian') awards.viewAt(last.awards);
   show(last.screen);
 }
@@ -334,4 +338,4 @@ if (!progress.name()) {
   setTimeout(() => { if (!progress.name() && current === 'menu') askName(); }, 700);
 }
 
-window.__app = { show, progress, audio, stats, update, askName, openProfiles, awards, get screen() { return current; }, tutor, game };
+window.__app = { show, progress, audio, stats, update, askName, openProfiles, awards, kata, get screen() { return current; }, tutor, game };

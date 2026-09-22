@@ -135,19 +135,32 @@ export const reasonText = (r) => REASON_TEXT[r] || 'Ayo coba sekali lagi!';
 // Splits the pad into `n` practice boxes and picks the arrangement that makes
 // each box as big as possible for the pad's shape: four boxes end up in a row
 // on a wide pad and in a square on a tall one.
-function layoutCells(w, h, n) {
+function layoutCells(w, h, n, prefer = 'fit') {
+  const gapF = 0.12;                                    // gap as a share of a box
+  const sideFor = (cols) => Math.min(
+    w / (cols + (cols - 1) * gapF),
+    h / (Math.ceil(n / cols) + (Math.ceil(n / cols) - 1) * gapF),
+  ) * (n === 1 ? 0.9 : 0.88);
+
   let best = null;
-  for (let cols = 1; cols <= n; cols++) {
-    const rows = Math.ceil(n / cols);
-    const gapF = 0.12;                                  // gap as a share of a box
-    const side = Math.min(
-      w / (cols + (cols - 1) * gapF),
-      h / (rows + (rows - 1) * gapF),
-    ) * (n === 1 ? 0.9 : 0.88);
-    // A grid with no empty slot reads like a worksheet line, so it wins unless
-    // a ragged one would make the boxes meaningfully bigger.
-    const score = side * (cols * rows === n ? 1.06 : 1);
-    if (!best || score >= best.score) best = { cols, rows, side, score };
+  if (prefer === 'row') {
+    // A word has to read left to right, so it stays on one line - unless that
+    // would shrink the boxes below what a finger can write in, and then it
+    // breaks onto the next line like text rather than being laid out as a grid.
+    const MIN = 86;
+    for (let cols = n; cols >= 1; cols--) {
+      const side = sideFor(cols);
+      if (side >= MIN || cols === 1) { best = { cols, rows: Math.ceil(n / cols), side }; break; }
+    }
+  } else {
+    for (let cols = 1; cols <= n; cols++) {
+      const rows = Math.ceil(n / cols);
+      const side = sideFor(cols);
+      // A grid with no empty slot reads like a worksheet line, so it wins unless
+      // a ragged one would make the boxes meaningfully bigger.
+      const score = side * (cols * rows === n ? 1.06 : 1);
+      if (!best || score >= best.score) best = { cols, rows, side, score };
+    }
   }
   const { cols, rows, side } = best;
   const gap = side * 0.12;
@@ -176,11 +189,12 @@ export class TracePad {
     this.ctx = canvas.getContext('2d');
     this.opts = Object.assign({ guide: 'full', tol: 12, lines: true, repeat: 1, onStroke: null, onComplete: null, onCell: null, onDraw: null }, opts);
     this.ch = null;
-    this.strokes = [];
+    // One entry per practice box. They are usually the same letter repeated,
+    // but the word mode gives each box a letter of its own.
+    this.boxes = [];
     this.done = [];          // the child's accepted ink, one entry per stroke
     this.index = 0;          // stroke within the current practice box
     this.cell = 0;           // which practice box is being written in
-    this.repeat = 1;
     this.cells = [{ ox: 0, oy: 0, s: 1 }];
     this.live = null;
     this.sparks = [];
@@ -218,11 +232,25 @@ export class TracePad {
     this.canvas.removeEventListener('pointercancel', this._onCancel);
   }
 
+  /** The same letter, written `repeat` times across the page. */
   setGlyph(ch, opts = {}) {
-    Object.assign(this.opts, opts);
-    this.ch = ch;
-    this.strokes = glyph(ch).strokes;
-    this.repeat = Math.max(1, Math.min(4, Math.round(this.opts.repeat || 1)));
+    Object.assign(this.opts, { layout: 'fit' }, opts);
+    const n = Math.max(1, Math.min(4, Math.round(this.opts.repeat || 1)));
+    this._fill(ch, new Array(n).fill(ch));
+    this._restore = () => this.setGlyph(ch, {});
+  }
+
+  /** One box per letter: the word mode writes b, o, l, a across the page. */
+  setWord(chars, opts = {}) {
+    Object.assign(this.opts, { layout: 'row' }, opts);
+    const list = [...chars];
+    this._fill(list.join(''), list);
+    this._restore = () => this.setWord(list, {});
+  }
+
+  _fill(label, chars) {
+    this.ch = label;
+    this.boxes = chars.map((c) => ({ ch: c, strokes: glyph(c).strokes }));
     this.done = [];
     this.scores = [];
     this.index = 0;
@@ -234,7 +262,13 @@ export class TracePad {
     this._layout();
   }
 
-  reset() { if (this.ch) this.setGlyph(this.ch); }
+  reset() { if (this._restore) this._restore(); }
+
+  // How many boxes are on the page, and the strokes of the one being written.
+  get repeat() { return this.boxes.length; }
+  get strokes() { return (this.boxes[Math.min(this.cell, this.boxes.length - 1)] || { strokes: [] }).strokes; }
+  /** The letter in the box being written - the word mode shows it. */
+  get letter() { return (this.boxes[Math.min(this.cell, this.boxes.length - 1)] || {}).ch || ''; }
 
   // Done means every practice box on the page has been written.
   get finished() { return this.cell >= this.repeat; }
@@ -266,7 +300,7 @@ export class TracePad {
     this.canvas.width = Math.round(r.width * dpr);
     this.canvas.height = Math.round(r.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    this.cells = layoutCells(r.width, r.height, this.repeat || 1);
+    this.cells = layoutCells(r.width, r.height, this.repeat || 1, this.opts.layout || 'fit');
     this._use(this.box);
   }
 
@@ -385,6 +419,9 @@ export class TracePad {
     c.save();
     if (this.shake > 0) c.translate(Math.sin(time * 60) * this.shake * 6, 0);
     c.clearRect(-20, -20, w + 40, h + 40);
+    // a pad that has not been given a letter yet: nothing to draw, and the
+    // boxes below would have no glyph to read
+    if (!this.boxes.length) { c.restore(); return; }
 
     for (let ci = 0; ci < this.cells.length; ci++) {
       this._use(this.cells[ci]);
@@ -395,7 +432,7 @@ export class TracePad {
 
       // A finished box keeps only the child's own writing; the boxes still to
       // come show the letter waiting faintly, like a worksheet.
-      if (gu !== 'none' && !done) this._paintGuide(active ? this.index : 0, active, gu);
+      if (gu !== 'none' && !done) this._paintGuide(this.boxes[ci].strokes, active ? this.index : 0, active, gu);
 
       c.lineCap = 'round'; c.lineJoin = 'round';
       for (const d of this.done) {
@@ -474,11 +511,11 @@ export class TracePad {
     c.restore();
   }
 
-  _paintGuide(from, active, gu) {
+  _paintGuide(strokes, from, active, gu) {
     const c = this.ctx;
     c.lineCap = 'round'; c.lineJoin = 'round';
-    for (let i = from; i < this.strokes.length; i++) {
-      const st = this.strokes[i];
+    for (let i = from; i < strokes.length; i++) {
+      const st = strokes[i];
       const cur = active && i === this.index;
       if (gu === 'faint' && !cur) continue;
       c.strokeStyle = cur ? 'rgba(90,90,120,0.30)'

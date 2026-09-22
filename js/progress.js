@@ -21,6 +21,8 @@ const newProfile = (name = '') => ({
   stars: {},          // glyph -> 1..3
   best: 0,            // best game score
   games: 0,
+  words: 0,           // words finished in the writing game
+  sentences: 0,
   repeat: 1,          // how many times a letter is written per page
 });
 
@@ -42,6 +44,8 @@ function fixProfile(p) {
     stars: p.stars && typeof p.stars === 'object' ? p.stars : {},
     best: Number(p.best) || 0,
     games: Number(p.games) || 0,
+    words: Number(p.words) || 0,
+    sentences: Number(p.sentences) || 0,
     repeat: Math.min(4, Math.max(1, Number(p.repeat) || 1)),
   };
 }
@@ -176,6 +180,8 @@ export function summary(id = data.active) {
     mastered: vals.filter((n) => n >= 3).length,
     best: p.best,
     games: p.games,
+    words: p.words || 0,
+    sentences: p.sentences || 0,
     created: p.created,
     seen: p.seen,
   };
@@ -213,6 +219,14 @@ export function setBest(n) {
   if (n > p.best) { p.best = n; p.seen = today(); save(); }
 }
 
+export function recordWord(sentence) {
+  const p = active();
+  p.words += 1;
+  if (sentence) p.sentences += 1;
+  p.seen = today();
+  save();
+}
+
 export function bumpGames() {
   active().games += 1;
   active().seen = today();
@@ -237,5 +251,7 @@ export function reset() {
   p.stars = {};
   p.best = 0;
   p.games = 0;
+  p.words = 0;
+  p.sentences = 0;
   save();
 }

@@ -205,7 +205,7 @@ export function trackName(name) {
 
 // ------------------------------------------------------------ local tally --
 const EMPTY = {
-  firstSeen: null, letters: 0, stars: 0, pages: 0,
+  firstSeen: null, letters: 0, stars: 0, pages: 0, words: 0, sentences: 0,
   runs: 0, gameScore: 0, bestScore: 0, bestLevel: 0, defeated: 0, seconds: 0,
   sets: { kapital: 0, kecil: 0, angka: 0 },
 };
@@ -242,6 +242,18 @@ export function recordLetter({ set, stars: got, repeat }) {
   event(`bintang-${got || 1}`, `Bintang: ${got || 1}`);
   if (repeat > 1) once(`latihan-${repeat}x`, `Latihan ${repeat}× per halaman`);
   once(`set-${set}`, `Membuka kelompok: ${set}`);
+  return s;
+}
+
+/** One finished word or sentence in the writing game. */
+export function recordWord({ level, sentence, stars: got }) {
+  const s = touch(stats());
+  s.words += 1;
+  if (sentence) s.sentences += 1;
+  s.stars += got || 0;
+  writeStats(s);
+  event(sentence ? 'kalimat-selesai' : 'kata-selesai', sentence ? 'Kalimat selesai' : 'Kata selesai');
+  once(`kata-tingkat-${level}`, `Tingkat kata: ${level}`);
   return s;
 }
 
@@ -283,6 +295,8 @@ export function renderPanel(el) {
       ${row('&nbsp;&nbsp;angka', s.sets.angka)}
       ${row('Kotak ditulis', s.pages)}
       ${row('Bintang', s.stars)}
+      ${row('Kata selesai', s.words)}
+      ${row('&nbsp;&nbsp;kalimat', s.sentences)}
       ${row('Permainan', s.runs)}
       ${row('Waktu main', fmtTime(s.seconds))}
       ${row('Musuh dikalahkan', s.defeated)}
