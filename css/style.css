@@ -295,7 +295,8 @@ html, body {
 }
 .panel h2 { margin: 0 0 10px; font-size: clamp(20px, 5vmin, 30px); color: var(--pink); }
 .panel p { margin: 6px 0; font-size: clamp(14px, 3.2vmin, 18px); font-weight: 700; }
-.panel-btns { display: flex; gap: 10px; margin-top: 16px; }
+.panel-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.panel-btns .btn { flex: 1 1 42%; min-width: 0; white-space: normal; padding: 12px 10px; }
 .switch {
   display: flex; align-items: center; gap: 12px;
   font-size: clamp(15px, 3.4vmin, 20px); font-weight: 800;
@@ -410,7 +411,8 @@ html, body {
   background: #f1f5fa; color: var(--ink); text-align: left;
 }
 .profile-pick.on { background: var(--green); color: #04352a; }
-.profile-pick .sub { margin-left: auto; font-size: clamp(11px, 2.6vmin, 14px); font-weight: 700; opacity: .75; }
+.profile-pick > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.profile-pick .sub { margin-left: auto; font-size: clamp(11px, 2.6vmin, 14px); font-weight: 700; opacity: .75; white-space: nowrap; }
 .profile-row .icon-btn { width: 46px; height: 46px; min-width: 46px; font-size: 19px; }
 
 /* AGPL section 13: the running app has to point at its own source */
