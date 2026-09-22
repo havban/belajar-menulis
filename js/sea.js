@@ -56,113 +56,115 @@ export function drawShark(c, { x, y, size = 100, t = 0, pose = 'idle', flip = fa
   c.translate(0, -FLOAT + swim * 0.6);
   c.rotate(p.tilt + Math.sin(t * 1.7) * 0.02);
 
-  // Everything below is drawn round rather than sharp: a plump body, a big
-  // head, small soft fins and an eye that takes up most of the face. That is
-  // what makes it read as a friendly cartoon instead of a shark.
+  // Baby-animal proportions, not a real shark: a nearly round body, a head
+  // that is most of it, two big eyes on the same side of the face, tiny fins
+  // and a wide simple grin. The palette and the shapes are our own - the
+  // borrowed part is only the idea that a baby shark should look like a
+  // cuddly toy.
 
-  // tail: two rounded lobes, not spikes
-  const sway = Math.sin(t * 4.2) * 8 * p.tail;
+  // tail: two short rounded lobes
+  const sway = Math.sin(t * 4.2) * 7 * p.tail;
   c.fillStyle = dark;
   c.beginPath();
-  c.moveTo(-26, -4);
-  c.quadraticCurveTo(-46, -18 + sway, -58, -26 + sway * 1.2);
-  c.quadraticCurveTo(-56, -10 + sway * 0.6, -48, 2 + sway * 0.5);
-  c.quadraticCurveTo(-56, 12 + sway * 0.9, -54, 24 + sway);
-  c.quadraticCurveTo(-42, 12 + sway * 0.5, -26, 6);
+  c.moveTo(-22, -2);
+  c.quadraticCurveTo(-40, -16 + sway, -50, -22 + sway * 1.2);
+  c.quadraticCurveTo(-46, -8 + sway * 0.6, -40, 2 + sway * 0.5);
+  c.quadraticCurveTo(-46, 12 + sway * 0.9, -44, 22 + sway);
+  c.quadraticCurveTo(-34, 12 + sway * 0.5, -22, 6);
   c.closePath();
   c.fill();
 
-  // dorsal fin: small, with a rounded tip
+  // dorsal fin: a small rounded triangle
   c.fillStyle = dark;
   c.beginPath();
-  c.moveTo(-6, -24);
-  c.quadraticCurveTo(4, -44, 18, -34);
-  c.quadraticCurveTo(10, -28, 6, -21);
+  c.moveTo(-4, -26);
+  c.quadraticCurveTo(6, -44, 18, -32);
+  c.quadraticCurveTo(10, -28, 6, -23);
   c.closePath();
   c.fill();
 
-  // body: chubby, with a short snout
+  // body: round, with just a hint of a snout at the front
   c.fillStyle = skin;
-  blob(c, [[46, 2], [36, -16], [12, -28], [-12, -24], [-27, -8], [-24, 10], [-2, 22], [26, 18], [42, 10]]);
+  blob(c, [[44, 0], [36, -18], [12, -30], [-12, -24], [-25, -4], [-14, 16], [8, 24], [32, 16]]);
   c.fill();
 
-  // a big pale belly, which also makes it look softer
+  // belly: a big pale front, which is most of what makes it look like a baby
   c.fillStyle = belly;
-  blob(c, [[-18, 6], [4, 20], [28, 16], [42, 8], [26, 10], [2, 11]]);
+  blob(c, [[-10, 10], [10, 23], [32, 15], [43, 2], [30, 6], [6, 9]]);
   c.fill();
 
-  // side fin: a small rounded paddle
+  // side fin: a little paddle
   c.fillStyle = darker;
   c.beginPath();
-  c.moveTo(6, 12);
-  c.quadraticCurveTo(-6, 22 + swim * 0.3, 2, 27 + swim * 0.3);
-  c.quadraticCurveTo(12, 22, 18, 15);
+  c.moveTo(4, 14);
+  c.quadraticCurveTo(-8, 24 + swim * 0.3, 0, 28 + swim * 0.3);
+  c.quadraticCurveTo(10, 23, 16, 17);
   c.closePath();
   c.fill();
 
-  // gills, drawn lightly so they do not clutter the face
-  c.strokeStyle = darker;
-  c.globalAlpha = 0.5;
-  c.lineWidth = 1.8;
-  c.lineCap = 'round';
-  for (let i = 0; i < 3; i++) {
+  // mouth: a shallow grin. The teeth are a white band with soft notches, not
+  // a row of fangs - pointed teeth on a round face read as a predator, which
+  // is the opposite of what this is for.
+  const open = p.mouth * 15;
+  c.fillStyle = '#9c3b52';
+  c.beginPath();
+  c.moveTo(12, 4);
+  c.quadraticCurveTo(26, 1, 40, 3);
+  c.quadraticCurveTo(28, 11 + open, 12, 4);
+  c.closePath();
+  c.fill();
+  c.save();
+  c.clip();                                    // everything below stays inside
+  c.fillStyle = '#fff';
+  c.fillRect(8, -4, 36, 7.5);                  // upper teeth: one bright band
+  c.strokeStyle = 'rgba(156,59,82,0.5)';
+  c.lineWidth = 1.2;
+  for (let i = 1; i < 5; i++) {                // soft separations, no points
     c.beginPath();
-    c.moveTo(-2 + i * 5, -10);
-    c.quadraticCurveTo(-5 + i * 5, -4, -2 + i * 5, 2);
+    c.moveTo(12 + i * 6, -1);
+    c.lineTo(12 + i * 6, 3.6);
     c.stroke();
   }
-  c.globalAlpha = 1;
-
-  // mouth: a wide smile that opens into a round chomp
-  const open = p.mouth * 13;
-  if (open > 3) {
-    c.fillStyle = '#8c3247';
-    c.beginPath();
-    c.moveTo(16, 6);
-    c.quadraticCurveTo(30, 3, 42, 6);
-    c.quadraticCurveTo(30, 10 + open, 16, 6);
-    c.closePath();
-    c.fill();
+  if (open > 6) {
+    const ly = 8 + open * 0.55;
     c.fillStyle = '#fff';
-    for (let i = 0; i < 3; i++) {                  // a few soft teeth
-      const tx = 21 + i * 7;
+    c.fillRect(13, ly - 4, 26, 6);             // lower band, only when open
+    c.strokeStyle = 'rgba(156,59,82,0.5)';
+    for (let i = 1; i < 4; i++) {
       c.beginPath();
-      c.moveTo(tx, 5.4);
-      c.lineTo(tx + 2.2, 9);
-      c.lineTo(tx + 4.4, 5);
-      c.closePath();
-      c.fill();
+      c.moveTo(13 + i * 6.5, ly - 3.4);
+      c.lineTo(13 + i * 6.5, ly + 1);
+      c.stroke();
     }
-  } else {
-    c.strokeStyle = '#a8415a';
-    c.lineWidth = 2.2;
-    c.lineCap = 'round';
-    c.beginPath();
-    c.moveTo(20, 8);
-    c.quadraticCurveTo(30, 15, 40, 8);
-    c.stroke();
   }
+  c.restore();
 
-  // blush
-  c.fillStyle = 'rgba(255,112,146,0.55)';
-  ellipse(c, 36, 0, 6.5, 4.2); c.fill();
+  // blush, on the cheek between eye and grin
+  c.fillStyle = 'rgba(255,105,135,0.75)';
+  ellipse(c, 41, -1, 4.6, 3.2); c.fill();
+  ellipse(c, 2, 1, 4.2, 3); c.fill();
 
-  // one big eye, most of the face
+  // two eyes on the same side of the face, the far one a little smaller
   const blink = Math.sin(t * 0.8) > 0.985 ? 0.1 : 1;
-  c.fillStyle = '#fff';
-  ellipse(c, 22, -10, 13, 13 * blink); c.fill();
-  c.fillStyle = '#20313d';
   const look = p.droop ? 2.5 : 0;
-  ellipse(c, 25, -9 + look, 6.5 * blink + 0.4, 7 * blink); c.fill();
-  c.fillStyle = '#fff';
-  ellipse(c, 27.5, -12.5, 2.6, 2.6); c.fill();
-  ellipse(c, 22.5, -5.5, 1.4, 1.4); c.fill();
+  const eye = (ex, ey, r) => {
+    c.fillStyle = '#fff';
+    ellipse(c, ex, ey, r, r * blink); c.fill();
+    c.fillStyle = '#20313d';
+    ellipse(c, ex + r * 0.2, ey + look, r * 0.58 * blink + 0.3, r * 0.6 * blink); c.fill();
+    c.fillStyle = '#fff';
+    ellipse(c, ex + r * 0.42, ey - r * 0.3, r * 0.2, r * 0.2); c.fill();
+    ellipse(c, ex - r * 0.1, ey + r * 0.35, r * 0.11, r * 0.11); c.fill();
+  };
+  eye(13, -12, 9);
+  eye(31, -11, 11);
+
   // A brow only when there is a mood to show - a blank face reads friendlier.
   if (p.droop || pose === 'roar') {
     c.strokeStyle = darker; c.lineWidth = 2.6; c.lineCap = 'round';
     c.beginPath();
-    if (p.droop) { c.moveTo(13, -25); c.lineTo(28, -20); }
-    else { c.moveTo(13, -21); c.lineTo(28, -27); }
+    if (p.droop) { c.moveTo(24, -26); c.lineTo(38, -21); c.moveTo(6, -25); c.lineTo(18, -22); }
+    else { c.moveTo(24, -23); c.lineTo(38, -28); c.moveTo(6, -21); c.lineTo(18, -25); }
     c.stroke();
   }
 

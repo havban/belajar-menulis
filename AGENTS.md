@@ -170,10 +170,13 @@ changing the call sites.
 The choice lives **per child** (`prefs().theme`), next to the practice-repeat
 setting: an older sibling can keep the dinosaurs while the younger one swims.
 
-Drawing rules are the same as always: canvas paths only, nothing loaded. For the
-shark specifically, cuteness is deliberate and load-bearing - a plump body, one
-oversized eye with highlights, a blush, small rounded fins, and **no eyebrow
-unless there is a mood to show**. A neutral face reads friendlier.
+Drawing rules are the same as always: canvas paths only, nothing loaded. The
+shark is drawn to baby-animal proportions on purpose - a nearly round body, a
+head that is most of it, **two** big eyes on the same side of the face, tiny
+fins, pink cheeks, and no eyebrow unless there is a mood to show. Its teeth are
+a white band with soft notches: a row of points on a round face reads as a
+predator, which is the opposite of what this is for. The proportions borrow the
+idea of a cuddly cartoon shark; the shapes and the palette are our own.
 
 ## The word game
 

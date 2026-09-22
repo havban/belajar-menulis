@@ -147,7 +147,8 @@ bisa menambah.
 * **Dua tema: 🦖 Dino dan 🦈 Hiu.** Pilih di ⚙️. Tema hiu memindahkan seluruh
   suasana ke **dasar laut** — air biru dengan berkas cahaya, gelembung, rumput
   laut, karang, ikan dan ubur-ubur yang lewat — maskot dinonya berganti jadi
-  **hiu kecil yang imut**, dan di permainan hiu itulah yang melawan ikan
+  **bayi hiu yang imut** — badan bulat, dua mata besar, pipi merona, dan gigi
+  putih yang tumpul, bukan taring — dan di permainan hiu itulah yang melawan ikan
   penyusup, ubur-ubur, dan bos gurita. **Tema disimpan per anak**, jadi kakak
   bisa main dino sementara adik main hiu di perangkat yang sama.
 * **Layar penuh.** Di ⚙️ ada pilihan layar penuh supaya jari kecil tidak
