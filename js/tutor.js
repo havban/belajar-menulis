@@ -98,13 +98,10 @@ export function createTutor() {
 
   // Once the letter is finished the only thing left to do is move on, so a big
   // button appears next to the dino - right where the child is already looking
-  // after the celebration - and the one in the footer changes colour to match.
+  // after the celebration. It is the only "next" on this screen: any other
+  // letter is one tap away in the strip along the top.
   function showNext(on) {
     $('t-cta').classList.toggle('hidden', !on);
-    // two buttons doing the same thing at the same time is just noise, so the
-    // footer one steps aside; before the letter is finished it stays, because
-    // that is how a child skips a letter they do not want
-    $('t-next').classList.toggle('hidden', on);
   }
 
   function refreshStars() {
@@ -207,9 +204,7 @@ export function createTutor() {
     stats.once('dengar-ditekan', 'Menekan tombol Dengar');
     audio.speakParts(audio.pickLine(lines.HEAR, said, 'hear')(spokenName(ch), wordOf(ch).word, shortName(ch)));
   });
-  const goNext = () => { audio.sfx('tap'); nextChar(); };
-  $('t-next').addEventListener('click', goNext);
-  $('t-cta').addEventListener('click', goNext);
+  $('t-cta').addEventListener('click', () => { audio.sfx('tap'); nextChar(); });
 
   return {
     pad, mascot, showName,

@@ -242,11 +242,12 @@ that one call (or the tag) stops it.
 
 ## Gotchas
 
-* **One "next" at a time.** When the call-to-action by the dino appears, the
-  footer's own Lanjut button hides - two buttons doing the same thing at once
-  read as clutter. It stays while the letter is unfinished, where it means
-  "skip this one". The footer is `grid-auto-flow: column`, so the remaining
-  three stretch to fill the row by themselves.
+* **One "next" at a time.** The lesson has exactly one: the call-to-action by
+  the dino, which only exists once the letter is finished. Any other letter is
+  one tap away in the strip along the top, so a footer button for it was just
+  clutter. The word screen keeps a footer button because it has no strip - it
+  is named "Kata Lain" there, and hides while the big one is up. The footer is
+  `grid-auto-flow: column`, so whatever buttons remain stretch to fill it.
 * **Attention animations glow, they do not move.** The "Lanjut" call-to-action
   exists to be tapped by a four-year-old; a button that bounces is a moving
   target. Both it and the footer button pulse a ring of light via `box-shadow`
