@@ -101,6 +101,12 @@ yang enak dilihat bersama anak:
 
 ### 5. Penghargaan
 
+Begitu satu huruf (atau satu kata) selesai, tombol **Lanjut ➜** yang besar
+muncul **tepat di bawah gambar dino** — di tempat mata anak sudah tertuju
+setelah perayaan — dan tombol Lanjut di deretan bawah ikut berubah menjadi
+kuning. Tombolnya berkedip dengan cahaya, bukan dengan bergerak, supaya tidak
+jadi sasaran bergerak untuk jari kecil.
+
 Setiap huruf yang berhasil ditulis mendapat **1–3 bintang**, tergantung
 kerapiannya. Saat berhasil: konfeti, bintang beterbangan, kata pujian
 ("Hebat!", "Pintar!"), suara riang, dan dino kecil di samping layar ikut

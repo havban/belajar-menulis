@@ -326,6 +326,9 @@ html, body {
   /* in a column the tip has no row to fill, so give it the card's width or a
      long sentence runs straight out of the card */
   .info .tip { width: 100%; flex: 0 0 auto; }
+  /* same trap for the big next button: flex-basis 100% in a column means the
+     card's whole height, and it stretched into a 480px tall slab */
+  .info .next-cta { width: 100%; flex: 0 0 auto; }
   .big-letter { font-size: clamp(48px, 11vmin, 96px); }
   .play { flex-direction: row; }
   .arena { flex: 0 0 42%; }
@@ -483,11 +486,46 @@ html, body {
 .name-input:focus { outline: none; border-color: var(--blue); background: #fff; }
 .name-input::placeholder { color: #9fb0c2; font-weight: 700; }
 
-/* The "Lanjut" button waves a few times once a letter is finished, then
-   settles. An animation that never stops is a distraction on a screen a child
-   is supposed to be writing on. */
-.btn.pulse { animation: pulse 1s ease-in-out 6; background: var(--yellow); }
+/* When a letter is finished the footer's "Lanjut" turns yellow and waves a few
+   times. The wave stops - an animation that never ends is a distraction on a
+   screen a child is supposed to be writing on - but the colour stays, so the
+   button still looks different from the three beside it. */
+.btn.pulse {
+  background: var(--yellow);
+  animation: pulse 1.4s ease-out 4;
+}
+/* The attention pulse is a ring of light, not a jump: a button that moves is a
+   moving target for a small finger, and this one exists to be hit. */
 @keyframes pulse {
-  0%, 100% { transform: none; }
-  50% { transform: translateY(-5px) scale(1.04); }
+  0% { box-shadow: 0 6px 0 rgba(0, 0, 0, .16), 0 0 0 0 rgba(255, 193, 60, .8); }
+  70%, 100% { box-shadow: 0 6px 0 rgba(0, 0, 0, .16), 0 0 0 16px rgba(255, 193, 60, 0); }
+}
+
+/* The big "what do I do now" button, next to the dino: it only exists once the
+   letter or word is finished, so a small child does not have to find the right
+   one among four look-alike buttons in the corner. Its breathing never stops,
+   because at that moment there is nothing else to do on the screen. */
+.next-cta {
+  flex: 1 1 100%;
+  min-height: 56px;
+  margin: 2px 0 4px;
+  padding: 12px 18px;
+  font-family: inherit;
+  font-size: clamp(17px, 4vmin, 24px);
+  font-weight: 900;
+  color: #04352a;
+  background: linear-gradient(180deg, #2ee6a8, var(--green));
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #04a97a, 0 10px 22px rgba(0, 0, 0, .2);
+  animation: cta-in .45s cubic-bezier(.2, 1.6, .5, 1) 1, cta-glow 1.8s ease-out .5s infinite;
+}
+.next-cta.hidden { display: none; }
+.next-cta:active { transform: translateY(4px); box-shadow: 0 2px 0 #04a97a; }
+@keyframes cta-in { from { opacity: 0; transform: scale(.7); } }
+/* Glow, do not move - see the note on .btn.pulse above. */
+@keyframes cta-glow {
+  0% { box-shadow: 0 6px 0 #04a97a, 0 10px 22px rgba(0, 0, 0, .2), 0 0 0 0 rgba(46, 230, 168, .75); }
+  70%, 100% { box-shadow: 0 6px 0 #04a97a, 0 10px 22px rgba(0, 0, 0, .2), 0 0 0 20px rgba(46, 230, 168, 0); }
 }

@@ -242,6 +242,16 @@ that one call (or the tag) stops it.
 
 ## Gotchas
 
+* **Attention animations glow, they do not move.** The "Lanjut" call-to-action
+  exists to be tapped by a four-year-old; a button that bounces is a moving
+  target. Both it and the footer button pulse a ring of light via `box-shadow`
+  and leave their box alone. (It also keeps them tappable from a test, which is
+  how the bouncing version was caught.)
+* **`flex: 1 1 100%` inside `.info` means the card's height in landscape**,
+  where that card is a column. It stretched the tip once and the call-to-action
+  again into a 480px slab; both now say `width: 100%; flex: 0 0 auto` in the
+  landscape block.
+
 * **The demo must never steal the pen.** `TracePad.playDemo()` returns early if
   a stroke is in progress, and `pointerdown` stops a running demo instead of
   ignoring the touch. Both were bugs: the auto-demo fired 900 ms after a letter

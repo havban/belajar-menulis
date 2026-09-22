@@ -83,7 +83,7 @@ export function createTutor() {
     audio.speakParts(audio.pickLine(lines.forName(lines.DONE, lines.DONE_WHO, who), said, 'done')(
       spokenName(ch), lines.TIMES(repeat), who).filter(Boolean));
     if (fresh) refreshStars();
-    $('t-next').classList.add('pulse');
+    showNext(true);
     setTimeout(() => { celebrating = false; }, 900);
   }
 
@@ -94,6 +94,14 @@ export function createTutor() {
     const who = progress.name();
     chip.hidden = !who;
     $('t-name').textContent = who;
+  }
+
+  // Once the letter is finished the only thing left to do is move on, so a big
+  // button appears next to the dino - right where the child is already looking
+  // after the celebration - and the one in the footer changes colour to match.
+  function showNext(on) {
+    $('t-cta').classList.toggle('hidden', !on);
+    $('t-next').classList.toggle('pulse', on);
   }
 
   function refreshStars() {
@@ -130,7 +138,7 @@ export function createTutor() {
     const n = glyph(c).strokes.length;
     const base = n > 1 ? `Ada ${n} garis. Mulai dari titik hijau!` : 'Mulai dari titik hijau, ikuti panahnya!';
     say(repeat > 1 ? `${base} Tulis ${repeat} kali ya.` : base);
-    $('t-next').classList.remove('pulse');
+    showNext(false);
     progress.rememberSession({ screen: 'belajar', set, ch: c });
     for (const el of strip.children) el.classList.toggle('on', el.dataset.ch === c);
     const on = strip.querySelector('.letter.on');
@@ -196,7 +204,9 @@ export function createTutor() {
     stats.once('dengar-ditekan', 'Menekan tombol Dengar');
     audio.speakParts(audio.pickLine(lines.HEAR, said, 'hear')(spokenName(ch), wordOf(ch).word, shortName(ch)));
   });
-  $('t-next').addEventListener('click', () => { audio.sfx('tap'); nextChar(); });
+  const goNext = () => { audio.sfx('tap'); nextChar(); };
+  $('t-next').addEventListener('click', goNext);
+  $('t-cta').addEventListener('click', goNext);
 
   return {
     pad, mascot, showName,

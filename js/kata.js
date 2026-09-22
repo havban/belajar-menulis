@@ -100,7 +100,7 @@ export function createKata() {
     fails = 0;
     done = false;
     $('k-emoji').textContent = item[1];
-    $('k-next').classList.remove('pulse');
+    showNext(false);
     pad.setWord([...words[0]]);
     paintTarget();
     say(words.length > 1 ? `${lv.hint} Mulai dari kata "${words[0]}".` : lv.hint);
@@ -140,8 +140,14 @@ export function createKata() {
     mascot.react('cheer', 3);
     say(`${'⭐'.repeat(stars)} Kamu menulis "${item[0]}"!`, 'good');
     audio.speakParts(audio.pickLine(lines.WORD_DONE, said, 'done')(item[0]));
-    $('k-next').classList.add('pulse');
+    showNext(true);
     refreshCount();
+  }
+
+  // The big button by the dino: it only exists when the word is done.
+  function showNext(on) {
+    $('k-cta').classList.toggle('hidden', !on);
+    $('k-next').classList.toggle('pulse', on);
   }
 
   function refreshCount() {
@@ -179,7 +185,9 @@ export function createKata() {
     audio.sfx('tap');
     audio.speakParts([{ text: item[0], rate: 0.85, pitch: 1.16 }]);
   });
-  $('k-next').addEventListener('click', () => { audio.sfx('tap'); start(); });
+  const goNext = () => { audio.sfx('tap'); start(); };
+  $('k-next').addEventListener('click', goNext);
+  $('k-cta').addEventListener('click', goNext);
 
   return {
     pad, mascot,
